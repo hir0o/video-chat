@@ -1,0 +1,67 @@
+import { useCallback, useEffect } from 'react'
+import { useAsync } from 'react-use'
+import { Socket } from 'socket.io-client'
+import { useCallConnection } from './useCallConnection'
+
+const addSignalingEventToSocket = (
+  socket: Socket,
+  peerConnection: RTCPeerConnection
+) => {
+  socket
+    .on('offer', async (offer: RTCSessionDescriptionInit) => {
+      console.log('on message : Offer', offer)
+      // offerを受信
+      await peerConnection.setRemoteDescription(
+        new RTCSessionDescription(offer)
+      )
+
+      // answerを作成して送信
+      const answer = await peerConnection.createAnswer()
+      await peerConnection.setLocalDescription(answer)
+      socket.emit('answer', answer)
+    })
+    .on('answer', (answer: RTCSessionDescriptionInit) => {
+      console.log('on message : Answer', answer)
+      // answerを受信
+      void peerConnection.setRemoteDescription(
+        new RTCSessionDescription(answer)
+      )
+    })
+    .on(
+      'candidate',
+      (message: {
+        type: 'candidate'
+        label: number
+        id: string
+        candidate: string
+      }) => {
+        console.log('on message : Candidate', message)
+
+        const candidate = new RTCIceCandidate({
+          sdpMLineIndex: message.label,
+          candidate: message.candidate,
+        })
+
+        void peerConnection.addIceCandidate(candidate)
+      }
+    )
+}
+
+export const useWebRTCSignaling = (
+  socket: Socket | null,
+  peerConnection: RTCPeerConnection | undefined
+) => {
+  useEffect(() => {
+    if (socket == null) return
+    if (peerConnection == null) return
+    addSignalingEventToSocket(socket, peerConnection)
+  }, [socket, peerConnection])
+
+  useAsync(async () => {
+    if (peerConnection == null) return
+    if (socket == null) return
+    const sessionDescription = await peerConnection.createOffer()
+    await peerConnection.setLocalDescription(sessionDescription)
+    socket.emit('offer', sessionDescription)
+  }, [socket, peerConnection])
+}
