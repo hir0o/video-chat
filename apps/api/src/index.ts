@@ -11,7 +11,6 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-  // console.log("a user connected");
   socket.broadcast.emit("join", "a user connected");
 
   socket.on("message", console.log);
