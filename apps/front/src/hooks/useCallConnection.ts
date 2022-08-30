@@ -4,13 +4,17 @@ import { Socket } from 'socket.io-client'
 
 export const useCallConnection = (
   socket: Socket | null,
-  peerConnection: RTCPeerConnection | undefined
+  peerConnection: RTCPeerConnection | undefined,
+  roomId: string
 ): void => {
   useAsync(async () => {
     if (peerConnection == null) return
     if (socket == null) return
     const sessionDescription = await peerConnection.createOffer()
     await peerConnection.setLocalDescription(sessionDescription)
-    socket.emit('offer', sessionDescription)
+    socket.emit('offer', {
+      roomId,
+      value: sessionDescription,
+    })
   }, [socket, peerConnection])
 }

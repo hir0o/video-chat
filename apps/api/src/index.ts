@@ -11,19 +11,23 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-  socket.broadcast.emit("join", "a user connected");
+  socket.on("join", (roomId) => {
+    socket.join(roomId);
+  });
 
-  socket.on("message", console.log);
+  socket.on("message", (message) => {
+    socket.broadcast.to("room").emit("message", "hello");
+  });
 
   socket.on("offer", (offer) => {
-    socket.broadcast.emit("offer", offer);
+    socket.broadcast.to(offer.roomId).emit("offer", offer.value);
   });
   socket.on("answer", (answer) => {
-    socket.broadcast.emit("answer", answer);
+    socket.broadcast.to(answer.roomId).emit("answer", answer.value);
   });
 
   socket.on("candidate", (candidate) => {
-    socket.broadcast.emit("candidate", candidate);
+    socket.broadcast.to(candidate.roomId).emit("candidate", candidate.value);
   });
 });
 
