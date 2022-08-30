@@ -6,6 +6,7 @@ import { useJoinRoom } from '~/hooks/useJoinRoom'
 import { usePeerConnection } from '~/hooks/usePeerConnection'
 import { useRoomId } from '~/hooks/useRoomId'
 import { useSocket } from '~/hooks/useSocket'
+import { useSpeechRecognition } from '~/hooks/useSpeechRecognition'
 import { useVideoStream } from '~/hooks/useVideoStream'
 import { useWebRTCSignaling } from '~/hooks/useWebRTCSignaling'
 
@@ -34,6 +35,10 @@ const Room: NextPage = () => {
     console.log('add event listener')
   }, [socket])
 
+  const { transcript } = useSpeechRecognition()
+
+  console.log(transcript)
+
   return (
     <div>
       <Head>
@@ -42,6 +47,13 @@ const Room: NextPage = () => {
       <h1>Video Chat App</h1>
       <video ref={localVideoRef} autoPlay playsInline />
       <video ref={remoteVideoRef} autoPlay playsInline />
+      <div>
+        <ul>
+          {Array.from(transcript.values()).map((item, index) => (
+            <li key={index}>{item}</li>
+          ))}
+        </ul>
+      </div>
     </div>
   )
 }
