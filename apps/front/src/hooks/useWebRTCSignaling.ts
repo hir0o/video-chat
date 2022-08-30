@@ -5,7 +5,8 @@ import { useCallConnection } from './useCallConnection'
 
 const addSignalingEventToSocket = (
   socket: Socket,
-  peerConnection: RTCPeerConnection
+  peerConnection: RTCPeerConnection,
+  roomId: string
 ) => {
   socket
     .on('offer', async (offer: RTCSessionDescriptionInit) => {
@@ -18,7 +19,10 @@ const addSignalingEventToSocket = (
       // answerを作成して送信
       const answer = await peerConnection.createAnswer()
       await peerConnection.setLocalDescription(answer)
-      socket.emit('answer', answer)
+      socket.emit('answer', {
+        roomId,
+        value: answer,
+      })
     })
     .on('answer', (answer: RTCSessionDescriptionInit) => {
       console.log('on message : Answer', answer)
@@ -49,12 +53,13 @@ const addSignalingEventToSocket = (
 
 export const useWebRTCSignaling = (
   socket: Socket | null,
-  peerConnection: RTCPeerConnection | undefined
+  peerConnection: RTCPeerConnection | undefined,
+  roomId: string
 ) => {
   useEffect(() => {
     if (socket == null) return
     if (peerConnection == null) return
-    addSignalingEventToSocket(socket, peerConnection)
+    addSignalingEventToSocket(socket, peerConnection, roomId)
   }, [socket, peerConnection])
 
   useAsync(async () => {
@@ -62,6 +67,9 @@ export const useWebRTCSignaling = (
     if (socket == null) return
     const sessionDescription = await peerConnection.createOffer()
     await peerConnection.setLocalDescription(sessionDescription)
-    socket.emit('offer', sessionDescription)
+    socket.emit('offer', {
+      roomId,
+      value: sessionDescription,
+    })
   }, [socket, peerConnection])
 }

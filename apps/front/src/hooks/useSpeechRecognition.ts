@@ -5,6 +5,7 @@ import { useWindow } from './useWindow'
 export const useSpeechRecognition = () => {
   const window = useWindow()
   const [recognition, setRecognition] = useState<any>(null)
+  const [transcript, setTranscript] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     const SpeechRecognition =
@@ -16,19 +17,19 @@ export const useSpeechRecognition = () => {
     setRecognition(r)
   }, [window])
 
-  const handleStart = useCallback(() => {
-    recognition.start()
-  }, [recognition])
+  // const handleStart = useCallback(() => {
+  //   recognition.start()
+  // }, [recognition])
 
-  const handleStop = useCallback(() => {
-    recognition.stop()
+  useEffect(() => {
+    if (recognition == null) return
+    recognition.start()
   }, [recognition])
 
   useEffect(() => {
     if (recognition == null) return
     recognition.continuous = true
     recognition.interimResults = true
-    console.log('add event')
 
     recognition.addEventListener('result', onResult)
     return () => {
@@ -39,13 +40,20 @@ export const useSpeechRecognition = () => {
   }, [recognition])
 
   const onResult = (event: any) => {
+    console.log(event)
+
     for (const res of event.results) {
-      console.log(res)
+      if (!res.isFinal) return
+      setTranscript((prev) => {
+        prev.add(res[0].transcript)
+        console.log(prev)
+
+        return prev
+      })
     }
   }
 
   return {
-    handleStart,
-    handleStop,
+    transcript,
   }
 }

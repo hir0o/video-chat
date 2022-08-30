@@ -6,7 +6,8 @@ import { Socket } from 'socket.io-client'
 const generateConnection = (
   stream: MediaStream,
   socket: Socket,
-  remoteVideo: HTMLVideoElement
+  remoteVideo: HTMLVideoElement,
+  roomId: string
 ): RTCPeerConnection => {
   const connection = new RTCPeerConnection({
     iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
@@ -28,10 +29,13 @@ const generateConnection = (
       }
 
       socket.emit('candidate', {
-        type: 'candidate',
-        label: e.candidate.sdpMLineIndex,
-        id: e.candidate.sdpMid,
-        candidate: e.candidate.candidate,
+        roomId: roomId,
+        value: {
+          type: 'candidate',
+          label: e.candidate.sdpMLineIndex,
+          id: e.candidate.sdpMid,
+          candidate: e.candidate.candidate,
+        },
       })
     }
   )
@@ -47,13 +51,14 @@ const generateConnection = (
 export const usePeerConnection = (
   stream: MediaStream | undefined,
   socket: Socket | null,
-  remoteVideo: HTMLVideoElement | null
+  remoteVideo: HTMLVideoElement | null,
+  roomId: string
 ): RTCPeerConnection | undefined => {
   const peerConnection = useMemo(() => {
     if (stream == null) return
     if (socket == null) return
     if (remoteVideo == null) return
-    return generateConnection(stream, socket, remoteVideo)
+    return generateConnection(stream, socket, remoteVideo, roomId)
   }, [stream, socket, remoteVideo])
 
   return peerConnection
