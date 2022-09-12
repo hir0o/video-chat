@@ -1,11 +1,16 @@
 import { Socket } from 'socket.io-client'
 
-const generateConnection = (
-  stream: MediaStream,
-  socket: Socket,
-  remoteVideo: HTMLVideoElement,
-  roomId: string
-): RTCPeerConnection => {
+export const peerConnectionFactory = ({
+  socket,
+  stream,
+  remoteVideo,
+  targetId,
+}: {
+  stream: MediaStream
+  socket: Socket
+  remoteVideo: HTMLVideoElement
+  targetId: string
+}): RTCPeerConnection => {
   const connection = new RTCPeerConnection({
     iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
   })
@@ -26,7 +31,7 @@ const generateConnection = (
       }
 
       socket.emit('candidate', {
-        roomId,
+        targetId,
         value: {
           type: 'candidate',
           label: e.candidate.sdpMLineIndex,
@@ -44,10 +49,3 @@ const generateConnection = (
   })
   return connection
 }
-
-export const peerConnectionFactory = (
-  stream: MediaStream,
-  socket: Socket,
-  remoteVideo: HTMLVideoElement,
-  roomId: string
-): RTCPeerConnection => generateConnection(stream, socket, remoteVideo, roomId)

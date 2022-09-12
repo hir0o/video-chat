@@ -27,18 +27,42 @@ io.on("connection", (socket) => {
       }
       socket.join(roomId);
 
-      console.log("call", rooms);
+      socket.broadcast.to(roomId).emit("call", {
+        callerId: socket.id,
+      });
+    })
+    // callしてきた人にofferを送る
+    .on(
+      "offer",
+      (payload: {
+        roomId: string;
+        targetId: string;
+        offer: RTCSessionDescriptionInit;
+      }) => {
+        io.to(payload.targetId).emit("offer", {
+          offer: payload.offer,
+          callerId: socket.id,
+        });
+      }
+    )
+    // これは個別に送信
+    .on("answer", (payload) => {
+      io.to(payload.targetId).emit("answer", {
+        callerId: socket.id,
+        answer: payload.answer,
+      });
+    })
+    // これも個別に送信
+    .on("candidate", (payload) => {
+      io.to(payload.targetId).emit("candidate", {
+        callerId: socket.id,
+        value: payload.value,
+      });
+    })
+    .on("getId", () => {
+      // console.log("getId", );
 
-      socket.broadcast.to(roomId).emit("call");
-    })
-    .on("offer", (offer) => {
-      socket.broadcast.to(offer.roomId).emit("offer", offer.value);
-    })
-    .on("answer", (answer) => {
-      socket.broadcast.to(answer.roomId).emit("answer", answer.value);
-    })
-    .on("candidate", (candidate) => {
-      socket.broadcast.to(candidate.roomId).emit("candidate", candidate.value);
+      io.to(socket.id).emit("getId", socket.id);
     });
 });
 

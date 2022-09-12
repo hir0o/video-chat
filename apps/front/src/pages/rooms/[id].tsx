@@ -19,14 +19,22 @@ const Room: NextPage = () => {
     new Map()
   )
   const peerConnectionHash = peerConnectionHashRef.current
+  const [myId, setMyId] = useState('')
 
   // callを送る処理
   useEffect(() => {
     if (socket == null) return
+    socket.on('getId', (userId: string) => {
+      setMyId(userId)
+    })
 
-    console.log('send message call')
+    socket.emit('getId')
 
     socket.emit('call', roomId)
+
+    return () => {
+      socket.off('getId')
+    }
   }, [socket, roomId])
 
   // callされた時の処理
@@ -34,24 +42,26 @@ const Room: NextPage = () => {
     if (socket == null) return
     if (stream.value == null) return
     if (remoteVideoWrapperRef.current == null) return
-    // callが来たら、peerConnectionを作成して、aを送信する
-    socket.on('call', async () => {
+    // callが来たら、peerConnectionを作成して、offerを送信する
+    socket.on('call', async (payload: { callerId: string }) => {
+      console.log('call userId', payload.callerId)
+
       const remoteVideo = generateVideoElm()
       console.log('on message call')
 
       // peerConnectionを作成
-      const peerConnection = peerConnectionFactory(
-        stream.value!,
+      const peerConnection = peerConnectionFactory({
+        stream: stream.value!,
         socket,
         remoteVideo,
-        roomId
-      )
+        targetId: payload.callerId,
+      })
       // videoを表示
       const remoteVideoWrapper = remoteVideoWrapperRef.current!
       remoteVideoWrapper.appendChild(remoteVideo)
 
       // peerConnectionを保存
-      peerConnectionHash.set(socket.id, peerConnection)
+      peerConnectionHash.set(payload.callerId, peerConnection)
 
       // offerを作成
       const offer = await peerConnection.createOffer()
@@ -62,14 +72,15 @@ const Room: NextPage = () => {
 
       socket.emit('offer', {
         roomId,
-        value: offer,
+        targetId: payload.callerId,
+        offer,
       })
     })
 
     return () => {
       socket.off('call')
     }
-  }, [socket, stream, roomId, peerConnectionHash])
+  }, [socket, stream, roomId, peerConnectionHash, myId])
 
   // offerが来た時の処理
   useEffect(() => {
@@ -77,37 +88,44 @@ const Room: NextPage = () => {
     if (stream.value == null) return
     if (remoteVideoWrapperRef.current == null) return
     // offerが来たら、peerConnectionを作成して、answerを送信する
-    socket.on('offer', async (offer: RTCSessionDescriptionInit) => {
-      const remoteVideo = generateVideoElm()
-      console.log('on message offer', offer)
-      const peerConnection = peerConnectionFactory(
-        stream.value!,
-        socket,
-        remoteVideo,
-        roomId
-      )
+    socket.on(
+      'offer',
+      async (payload: {
+        callerId: string
+        offer: RTCSessionDescriptionInit
+      }) => {
+        const remoteVideo = generateVideoElm()
+        console.log('on message offer', payload)
 
-      // videoを表示
-      const remoteVideoWrapper = remoteVideoWrapperRef.current!
-      remoteVideoWrapper.appendChild(remoteVideo)
+        const peerConnection = peerConnectionFactory({
+          stream: stream.value!,
+          socket,
+          remoteVideo,
+          targetId: payload.callerId,
+        })
 
-      peerConnectionHash.set(socket.id, peerConnection)
+        // videoを表示
+        const remoteVideoWrapper = remoteVideoWrapperRef.current!
+        remoteVideoWrapper.appendChild(remoteVideo)
 
-      await peerConnection.setRemoteDescription(offer)
-      const answer = await peerConnection.createAnswer()
-      await peerConnection.setLocalDescription(answer)
-      console.log('send message answer')
+        peerConnectionHash.set(payload.callerId, peerConnection)
 
-      socket.emit('answer', {
-        roomId,
-        value: answer,
-      })
-    })
+        await peerConnection.setRemoteDescription(payload.offer)
+        const answer = await peerConnection.createAnswer()
+        await peerConnection.setLocalDescription(answer)
+        console.log('send message answer')
+
+        socket.emit('answer', {
+          targetId: payload.callerId,
+          answer,
+        })
+      }
+    )
 
     return () => {
       socket.off('offer')
     }
-  }, [socket, stream, roomId, peerConnectionHash])
+  }, [socket, stream, roomId, peerConnectionHash, myId])
 
   // answerが来た時の処理
   useEffect(() => {
@@ -115,17 +133,25 @@ const Room: NextPage = () => {
     if (stream.value == null) return
     if (remoteVideoWrapperRef.current == null) return
     // answerが来たら、peerConnectionを作成する
-    socket.on('answer', async (answer: RTCSessionDescriptionInit) => {
-      console.log('on message answer', answer)
-      const peerConnection = peerConnectionHash.get(socket.id)
+    socket.on(
+      'answer',
+      async (payload: {
+        callerId: string
+        answer: RTCSessionDescriptionInit
+      }) => {
+        console.log('on message answer', payload)
+        const peerConnection = peerConnectionHash.get(payload.callerId)
 
-      if (peerConnection == null) {
-        // throw new Error("peerConnection doesn't exist")
-        return
+        console.log(peerConnectionHash)
+
+        if (peerConnection == null) {
+          // throw new Error("peerConnection doesn't exist")
+          return
+        }
+
+        await peerConnection.setRemoteDescription(payload.answer)
       }
-
-      await peerConnection.setRemoteDescription(answer)
-    })
+    )
 
     return () => {
       socket.off('answer')
@@ -137,20 +163,21 @@ const Room: NextPage = () => {
 
     socket.on(
       'candidate',
-      (message: {
-        type: 'candidate'
-        label: number
-        id: string
-        candidate: string
+      (payload: {
+        callerId: string
+        value: {
+          type: 'candidate'
+          label: number
+          id: string
+          candidate: string
+        }
       }) => {
-        console.log('on message : Candidateaaa', message)
-
         const candidate = new RTCIceCandidate({
-          sdpMLineIndex: message.label,
-          candidate: message.candidate,
+          sdpMLineIndex: payload.value.label,
+          candidate: payload.value.candidate,
         })
 
-        const peerConnection = peerConnectionHash.get(socket.id)
+        const peerConnection = peerConnectionHash.get(payload.callerId)
 
         if (peerConnection == null) {
           // throw new Error("peerConnection doesn't exist")
@@ -185,8 +212,9 @@ const Room: NextPage = () => {
         <title>title</title>
       </Head>
       <h1>Video Chat App</h1>
+      <h1>my id is {myId}</h1>
       <video ref={localVideoRef} autoPlay playsInline />
-      <div ref={remoteVideoWrapperRef} />
+      <div className="videoContainer" ref={remoteVideoWrapperRef} />
       {/* <div>
         <ul>
           {Array.from(transcript.values()).map((item, index) => (
@@ -194,6 +222,14 @@ const Room: NextPage = () => {
           ))}
         </ul>
       </div> */}
+      <button
+        type="button"
+        onClick={() => {
+          socket?.emit('getId', socket.id)
+        }}
+      >
+        submit
+      </button>
     </div>
   )
 }
