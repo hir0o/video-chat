@@ -51,25 +51,19 @@ const addSignalingEventToSocket = (
     )
 }
 
-export const useWebRTCSignaling = (
+export const webRTCSignaling = async (
   socket: Socket | null,
   peerConnection: RTCPeerConnection | undefined,
   roomId: string
 ) => {
-  useEffect(() => {
-    if (socket == null) return
-    if (peerConnection == null) return
-    addSignalingEventToSocket(socket, peerConnection, roomId)
-  }, [socket, peerConnection])
+  if (socket == null) return
+  if (peerConnection == null) return
+  addSignalingEventToSocket(socket, peerConnection, roomId)
 
-  useAsync(async () => {
-    if (peerConnection == null) return
-    if (socket == null) return
-    const sessionDescription = await peerConnection.createOffer()
-    await peerConnection.setLocalDescription(sessionDescription)
-    socket.emit('offer', {
-      roomId,
-      value: sessionDescription,
-    })
-  }, [socket, peerConnection])
+  const sessionDescription = await peerConnection.createOffer()
+  await peerConnection.setLocalDescription(sessionDescription)
+  socket.emit('offer', {
+    roomId,
+    value: sessionDescription,
+  })
 }

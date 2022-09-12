@@ -1,6 +1,3 @@
-import { useMemo } from 'react'
-import { useAsync } from 'react-use'
-import { AsyncState } from 'react-use/lib/useAsync'
 import { Socket } from 'socket.io-client'
 
 const generateConnection = (
@@ -29,7 +26,7 @@ const generateConnection = (
       }
 
       socket.emit('candidate', {
-        roomId: roomId,
+        roomId,
         value: {
           type: 'candidate',
           label: e.candidate.sdpMLineIndex,
@@ -48,18 +45,9 @@ const generateConnection = (
   return connection
 }
 
-export const usePeerConnection = (
-  stream: MediaStream | undefined,
-  socket: Socket | null,
-  remoteVideo: HTMLVideoElement | null,
+export const peerConnectionFactory = (
+  stream: MediaStream,
+  socket: Socket,
+  remoteVideo: HTMLVideoElement,
   roomId: string
-): RTCPeerConnection | undefined => {
-  const peerConnection = useMemo(() => {
-    if (stream == null) return
-    if (socket == null) return
-    if (remoteVideo == null) return
-    return generateConnection(stream, socket, remoteVideo, roomId)
-  }, [stream, socket, remoteVideo])
-
-  return peerConnection
-}
+): RTCPeerConnection => generateConnection(stream, socket, remoteVideo, roomId)

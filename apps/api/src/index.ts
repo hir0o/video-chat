@@ -15,24 +15,31 @@ const io = new Server(server, {
 const rooms = new Map<string, string[]>();
 
 io.on("connection", (socket) => {
-  socket.on("join", (roomId) => {
-    if (roomId == null) return;
-    if (rooms.has(roomId)) {
-      rooms.set(roomId, [...rooms.get(roomId)!, socket.id]);
-    }
-    rooms.set(roomId, [socket.id]);
-    socket.join(roomId);
-  });
-  socket.on("offer", (offer) => {
-    socket.broadcast.to(offer.roomId).emit("offer", offer.value);
-  });
-  socket.on("answer", (answer) => {
-    socket.broadcast.to(answer.roomId).emit("answer", answer.value);
-  });
+  socket
+    .on("call", (roomId) => {
+      console.log("call", roomId);
 
-  socket.on("candidate", (candidate) => {
-    socket.broadcast.to(candidate.roomId).emit("candidate", candidate.value);
-  });
+      if (roomId == null) return;
+      if (rooms.has(roomId)) {
+        rooms.set(roomId, [...rooms.get(roomId)!, socket.id]);
+      } else {
+        rooms.set(roomId, [socket.id]);
+      }
+      socket.join(roomId);
+
+      console.log("call", rooms);
+
+      socket.broadcast.to(roomId).emit("call");
+    })
+    .on("offer", (offer) => {
+      socket.broadcast.to(offer.roomId).emit("offer", offer.value);
+    })
+    .on("answer", (answer) => {
+      socket.broadcast.to(answer.roomId).emit("answer", answer.value);
+    })
+    .on("candidate", (candidate) => {
+      socket.broadcast.to(candidate.roomId).emit("candidate", candidate.value);
+    });
 });
 
 app.get("/rooms", (req, res) => {
