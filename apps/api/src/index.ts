@@ -12,7 +12,10 @@ const io = new Server(server, {
   },
 });
 
-const rooms = new Map<string, string[]>();
+type RoomId = string;
+type UserId = string;
+
+const rooms = new Map<RoomId, UserId[]>();
 
 io.on("connection", (socket) => {
   socket
@@ -63,7 +66,32 @@ io.on("connection", (socket) => {
       // console.log("getId", );
 
       io.to(socket.id).emit("getId", socket.id);
+    })
+    .on("reave", (roomId) => {
+      if (rooms.has(roomId)) {
+        rooms.set(
+          roomId,
+          rooms.get(roomId)!.filter((id) => id !== socket.id)
+        );
+      }
     });
+
+  io.on("connection", (socket) => {
+    socket.on("disconnecting", () => {
+      const sids = io.of("/").adapter.sids;
+      const user = sids.get(socket.id);
+      if (user == null) return;
+      const [userId, roomId] = Array.from(user);
+      if (roomId == null) return;
+
+      rooms.set(
+        roomId,
+        rooms.get(roomId)!.filter((id) => id !== userId)
+      );
+
+      console.log(rooms);
+    });
+  });
 });
 
 app.get("/rooms", (req, res) => {
