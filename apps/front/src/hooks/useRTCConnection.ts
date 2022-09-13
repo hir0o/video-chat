@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { Socket } from 'socket.io-client'
 import { generateVideoElm } from './generateVideoElm'
 import { peerConnectionFactory } from './peerConnection'
+import { useBeforeUnLoad } from './useBeforeUnLoad'
 import { useRoomId } from './useRoomId'
 
 export const useRTCConnection = ({
@@ -40,7 +41,7 @@ export const useRTCConnection = ({
     socket.on('call', async (payload: { callerId: string }) => {
       console.log('call userId', payload.callerId)
 
-      const remoteVideo = generateVideoElm()
+      const remoteVideo = generateVideoElm(payload.callerId)
       console.log('on message call')
 
       // peerConnectionを作成
@@ -87,7 +88,7 @@ export const useRTCConnection = ({
         callerId: string
         offer: RTCSessionDescriptionInit
       }) => {
-        const remoteVideo = generateVideoElm()
+        const remoteVideo = generateVideoElm(payload.callerId)
         console.log('on message offer', payload)
 
         const peerConnection = peerConnectionFactory({
@@ -178,4 +179,19 @@ export const useRTCConnection = ({
       }
     )
   }, [socket, peerConnectionHash])
+
+  // ユーザが離脱した時に、videoを削除する
+  useEffect(() => {
+    if (socket == null) return
+
+    socket.on('leave', (payload: { callerId: string }) => {
+      const video = document.getElementById(payload.callerId)
+
+      console.log(video)
+
+      if (video == null) return
+
+      video.remove()
+    })
+  }, [socket])
 }

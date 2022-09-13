@@ -66,14 +66,6 @@ io.on("connection", (socket) => {
       // console.log("getId", );
 
       io.to(socket.id).emit("getId", socket.id);
-    })
-    .on("reave", (roomId) => {
-      if (rooms.has(roomId)) {
-        rooms.set(
-          roomId,
-          rooms.get(roomId)!.filter((id) => id !== socket.id)
-        );
-      }
     });
 
   io.on("connection", (socket) => {
@@ -89,7 +81,11 @@ io.on("connection", (socket) => {
         rooms.get(roomId)!.filter((id) => id !== userId)
       );
 
-      console.log(rooms);
+      console.log("rooms", rooms);
+
+      socket.broadcast.to(roomId).emit("leave", {
+        callerId: userId,
+      });
     });
   });
 });
