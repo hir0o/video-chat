@@ -5,6 +5,8 @@
   "license": "MIT",
   "scripts": {
     "dev": "next dev -p 8080",
+    "build": "next build",
+    "start": "next start -p 8080",
     "prepare": "husky install",
     "lint-staged": "lint-staged"
   },
