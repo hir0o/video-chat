@@ -9,13 +9,15 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 exports.__esModule = true;
-var cors_1 = require("cors");
-var express_1 = require("express");
-var http_1 = require("http");
+var cors = require("cors");
+var express = require("express");
+var http = require("http");
 var socket_io_1 = require("socket.io");
-var app = (0, express_1["default"])();
-app.use((0, cors_1["default"])());
-var server = http_1["default"].createServer(app);
+// @ts-ignore
+var app = express();
+// @ts-ignore
+app.use(cors());
+var server = http.createServer(app);
 var io = new socket_io_1.Server(server, {
     cors: {
         origin: "*"
@@ -81,6 +83,9 @@ io.on("connection", function (socket) {
         });
     });
 });
+app.get("/health", function (req, res) {
+    res.send("ok");
+});
 app.get("/rooms", function (req, res) {
     var roomInfo = Array.from(rooms.keys()).map(function (roomId) { return ({
         roomId: roomId,
@@ -89,6 +94,6 @@ app.get("/rooms", function (req, res) {
     res.json(roomInfo);
 });
 io.listen(3005);
-app.listen(3004, function () {
-    console.log("Server is running on port 3005");
+app.listen(80, function () {
+    console.log("Server is running on port 80");
 });

@@ -1,9 +1,11 @@
-import cors from "cors";
-import express from "express";
-import http from "http";
+import * as cors from "cors";
+import * as express from "express";
+import * as http from "http";
 import { Server } from "socket.io";
 
+// @ts-ignore
 const app = express();
+// @ts-ignore
 app.use(cors());
 const server = http.createServer(app);
 const io = new Server(server, {
