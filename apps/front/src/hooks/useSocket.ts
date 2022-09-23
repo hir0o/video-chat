@@ -1,13 +1,12 @@
 import { io, Socket } from 'socket.io-client'
 import { useEffect, useState } from 'react'
-
-const SOCKET_URL = 'ws://localhost:3005'
+import { wsUrl } from './url'
 
 export const useSocket = (): Socket | null => {
   const [socket, setSocket] = useState<Socket | null>(null)
 
   useEffect(() => {
-    const s = io(SOCKET_URL)
+    const s = io(wsUrl)
     setSocket(s)
   }, [])
 

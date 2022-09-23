@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
 import { useAsync } from 'react-use'
 import { AsyncState } from 'react-use/lib/useAsync'
+import { httpUrl } from './url'
 
 type RoomInfo = {
   roomId: string
@@ -9,7 +9,7 @@ type RoomInfo = {
 
 export const useRooms = (): AsyncState<RoomInfo[]> => {
   const rooms = useAsync(async () => {
-    const response = await fetch('http://localhost:3004/rooms')
+    const response = await fetch(httpUrl)
     const data = (await response.json()) as RoomInfo[]
     return data
   }, [])
