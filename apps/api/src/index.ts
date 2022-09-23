@@ -90,6 +90,10 @@ io.on("connection", (socket) => {
   });
 });
 
+app.get("/health", (req, res) => {
+  res.send("ok");
+});
+
 app.get("/rooms", (req, res) => {
   const roomInfo = Array.from(rooms.keys()).map((roomId) => ({
     roomId,
@@ -101,6 +105,6 @@ app.get("/rooms", (req, res) => {
 
 io.listen(3005);
 
-app.listen(3004, () => {
-  console.log("Server is running on port 3005");
+app.listen(80, () => {
+  console.log("Server is running on port 80");
 });
