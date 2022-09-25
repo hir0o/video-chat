@@ -1,9 +1,10 @@
-import { NextPage } from 'next'
+import { CustomNextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
+import { Layout } from '~/components/Layout'
 import { useRooms } from '~/hooks/useRooms'
 
-const Index: NextPage = () => {
+const Index: CustomNextPage = () => {
   const rooms = useRooms()
 
   return (
@@ -31,6 +32,10 @@ const Index: NextPage = () => {
       </ul>
     </div>
   )
+}
+
+Index.getLayout = (page) => {
+  return <Layout>{page}</Layout>
 }
 
 export default Index

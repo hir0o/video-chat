@@ -1,0 +1,15 @@
+.layout {
+  background-color: var(--color-bg);
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr;
+  min-height: 100vh;
+}
+
+.layout__main {
+  padding-inline: calc((100vw - var(--width-container)) / 2);
+  padding-block: 16px;
+  @media (max-width: 1240px) {
+    padding-inline: 20px;
+  }
+}

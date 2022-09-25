@@ -1,7 +1,21 @@
-import type { AppProps } from 'next/app'
-import '../assets/styles/reset.css'
+import { ChakraProvider } from '@chakra-ui/react'
+import type { CustomAppPage } from 'next/app'
+import '~/assets/styles/reset.css'
+import '~/assets/styles/valiables.css'
 
-// @ts-ignore
-const MyApp = ({ Component, pageProps }) => <Component {...pageProps} />
+const App: CustomAppPage = ({ Component, pageProps }) => {
+  const getLayout =
+    Component.getLayout ||
+    ((page) => {
+      return page
+    })
 
-export default MyApp
+  return (
+    <>
+      {/* @ts-ignore */}
+      <ChakraProvider>{getLayout(<Component {...pageProps} />)}</ChakraProvider>
+    </>
+  )
+}
+
+export default App

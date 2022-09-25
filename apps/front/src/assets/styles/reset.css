@@ -20,7 +20,8 @@ ul {
 }
 
 /* For images to not be able to exceed their container */
-img {
+img,
+video {
   max-width: 100%;
 }
 
@@ -35,4 +36,17 @@ table {
 
 .videoContainer > * {
   width: 100%;
+}
+
+button {
+  background: gray;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: black;
 }

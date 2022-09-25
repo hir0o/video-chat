@@ -1,24 +1,23 @@
+import { useMemo } from 'react'
 import { useAsync } from 'react-use'
 import { AsyncState } from 'react-use/lib/useAsyncFn'
 
-export const useVideoStream = (
-  videoRef: HTMLVideoElement | null
-): AsyncState<MediaStream> => {
+export const useVideoStream = ({
+  cameraOn,
+  micOn,
+}: {
+  cameraOn: boolean
+  micOn: boolean
+}): AsyncState<MediaStream> => {
   const stream = useAsync(async () => {
-    if (videoRef == null) return
-    const constraints = {
-      audio: false,
-      video: true,
+    const constraints: MediaStreamConstraints = {
+      audio: micOn,
+      video: cameraOn,
     }
     const streamObject = await navigator.mediaDevices.getUserMedia(constraints)
 
-    // eslint-disable-next-line no-param-reassign
-    videoRef.srcObject = streamObject
-
-    void videoRef.play()
-
     return streamObject
-  }, [videoRef])
+  }, [micOn, cameraOn])
 
   return stream
 }
