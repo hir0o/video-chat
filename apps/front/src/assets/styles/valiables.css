@@ -1,0 +1,8 @@
+:root {
+  --color-white: #fff;
+  --color-bg: #eff1fa;
+
+  --font-title: Inter, Avenir, Helvetica, Arial, sans-serif;
+
+  --width-container: 1200px;
+}

@@ -2,17 +2,18 @@ import { useEffect, useRef } from 'react'
 import { Socket } from 'socket.io-client'
 import { generateVideoElm } from './generateVideoElm'
 import { peerConnectionFactory } from './peerConnection'
-import { useBeforeUnLoad } from './useBeforeUnLoad'
 import { useRoomId } from './useRoomId'
 
 export const useRTCConnection = ({
   socket,
   stream,
   remoteVideoWrapper,
+  name,
 }: {
   socket: Socket | null
   stream: MediaStream | undefined
   remoteVideoWrapper: HTMLDivElement | null
+  name: string
 }) => {
   const roomId = useRoomId()
   const peerConnectionHashRef = useRef<Map<string, RTCPeerConnection>>(

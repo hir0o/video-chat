@@ -1,0 +1,15 @@
+.header {
+  background-color: var(--color-white);
+  padding-inline: calc((100vw - var(--width-container)) / 2);
+  padding-block: 16px;
+  @media (max-width: 1240px) {
+    padding-inline: 20px;
+  }
+}
+
+.header__title {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0;
+  font-family: var(--font-title);
+}

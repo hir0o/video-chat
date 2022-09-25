@@ -9,7 +9,7 @@ type RoomInfo = {
 
 export const useRooms = (): AsyncState<RoomInfo[]> => {
   const rooms = useAsync(async () => {
-    const response = await fetch(httpUrl)
+    const response = await fetch(httpUrl + '/rooms')
     const data = (await response.json()) as RoomInfo[]
     return data
   }, [])

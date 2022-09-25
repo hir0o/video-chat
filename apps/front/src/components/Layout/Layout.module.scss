@@ -1,0 +1,11 @@
+.layout {
+  background-color: var(--color-bg);
+}
+
+.layout__main {
+  padding-inline: calc((100vw - var(--width-container)) / 2);
+  padding-block: 16px;
+  @media (max-width: 1240px) {
+    padding-inline: 20px;
+  }
+}

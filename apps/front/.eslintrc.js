@@ -74,5 +74,6 @@ module.exports = {
       },
     ],
   },
+  'arrow-style-style': 0,
   ignorePatterns: ['.eslintrc.*', '*.config.*'],
 }
