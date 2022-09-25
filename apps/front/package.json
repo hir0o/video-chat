@@ -10,9 +10,14 @@
     "tsm": "typed-scss-modules src --watch --implementation sass --nameFormat none --exportType default --aliasPrefixes.@ src/"
   },
   "dependencies": {
+    "@chakra-ui/react": "^2.3.4",
+    "@emotion/react": "^11.10.4",
+    "@emotion/styled": "^11.10.4",
+    "framer-motion": "^7.3.6",
     "next": "^12.2.3",
     "react": "^18.0.0",
     "react-dom": "^18.2.0",
+    "react-icons": "^4.4.0",
     "react-use": "^17.4.0",
     "sass": "^1.55.0",
     "socket.io-client": "^4.5.1"

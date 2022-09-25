@@ -10,8 +10,8 @@ import { useVideoStream } from '~/hooks/useVideoStream'
 
 const Page: CustomNextPage = () => {
   const [leady, setLeady] = useBoolean(false)
-  const [cameraOn, setCameraOn] = useToggle(true)
-  const [micOn, setMicOn] = useToggle(true)
+  const [cameraOn, setCameraOn] = useState(true)
+  const [micOn, setMicOn] = useState(false)
   const [name, setName] = useState('')
   const stream = useVideoStream({
     cameraOn,
@@ -25,11 +25,11 @@ const Page: CustomNextPage = () => {
   }, [setLeady])
 
   const toggleCamera = useCallback(() => {
-    setCameraOn()
+    setCameraOn((prev) => !prev)
   }, [setCameraOn])
 
   const toggleMic = useCallback(() => {
-    setMicOn()
+    setMicOn((prev) => !prev)
   }, [setMicOn])
 
   return (

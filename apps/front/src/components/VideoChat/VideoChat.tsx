@@ -3,7 +3,6 @@ import { AsyncState } from 'react-use/lib/useAsyncFn'
 import { useLinkStreamToVideoElm } from '~/hooks/useLinkStreamToVideoElm'
 import { useRTCConnection } from '~/hooks/useRTCConnection'
 import { useSocket } from '~/hooks/useSocket'
-import { useVideoStream } from '~/hooks/useVideoStream'
 
 type Props = {
   name: string

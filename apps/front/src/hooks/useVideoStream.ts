@@ -10,7 +10,7 @@ export const useVideoStream = ({
   micOn: boolean
 }): AsyncState<MediaStream> => {
   const stream = useAsync(async () => {
-    const constraints = {
+    const constraints: MediaStreamConstraints = {
       audio: micOn,
       video: cameraOn,
     }

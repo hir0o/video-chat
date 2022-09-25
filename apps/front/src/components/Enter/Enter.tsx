@@ -1,5 +1,7 @@
+import { Box } from '@chakra-ui/react'
 import { FC } from 'react'
-import styles from './Enter.module.scss'
+import { EnterNameInput } from './EnterNameInput'
+import { EnterVideo } from './EnterVideo'
 
 type Props = {
   localVideoRef: React.RefObject<HTMLVideoElement>
@@ -22,19 +24,25 @@ export const Enter: FC<Props> = ({
   micOn,
 }) => {
   return (
-    <div className={styles.enter}>
-      <h1>名前を入れてね</h1>
-      <div className={styles.enter__video}>
-        {cameraOn && <video ref={localVideoRef} autoPlay playsInline />}
-      </div>
-      <button onClick={toggleCamera}>camera on/off</button>
-      <button onClick={toggleMic}>mic on/off</button>
-      <input
-        type="text"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
+    <Box
+      display="flex"
+      justifyContent="center"
+      gap={12}
+      alignItems="center"
+      height="100vh"
+    >
+      <EnterVideo
+        _ref={localVideoRef}
+        toggleCamera={toggleCamera}
+        cameraOn={cameraOn}
+        toggleMic={toggleMic}
+        micOn={micOn}
       />
-      <button onClick={handleSubmit}>OK</button>
-    </div>
+      <EnterNameInput
+        name={name}
+        setName={setName}
+        handleSubmit={handleSubmit}
+      />
+    </Box>
   )
 }
