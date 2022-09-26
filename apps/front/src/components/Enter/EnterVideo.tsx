@@ -26,16 +26,20 @@ export const EnterVideo: FC<Props> = ({
 
   return (
     <Box width="100%" borderRadius="md" boxShadow="md" overflow="hidden">
-      <AspectRatio ratio={16 / 9} width="100%">
-        <video
-          ref={_ref}
-          autoPlay
-          playsInline
-          style={{
-            width: '100%',
-            backgroundColor: 'black',
-          }}
-        />
+      <AspectRatio ratio={16 / 9} width="100%" bgColor="black">
+        {cameraOn ? (
+          <video
+            ref={_ref}
+            autoPlay
+            playsInline
+            style={{
+              width: '100%',
+              backgroundColor: 'black',
+            }}
+          />
+        ) : (
+          <></>
+        )}
       </AspectRatio>
       <Box
         display="flex"
