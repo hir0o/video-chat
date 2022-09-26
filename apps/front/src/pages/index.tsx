@@ -1,4 +1,5 @@
 import { CustomNextPage } from 'next'
+import { useSession } from 'next-auth/react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { Layout } from '~/components/Layout'
@@ -6,6 +7,7 @@ import { useRooms } from '~/hooks/useRooms'
 
 const Index: CustomNextPage = () => {
   const rooms = useRooms()
+  const { data } = useSession()
 
   return (
     <div>
@@ -13,6 +15,10 @@ const Index: CustomNextPage = () => {
         <title>room selection</title>
       </Head>
       <h1>rooms</h1>
+      <h2>user: {data?.user?.name}</h2>
+      <img src={data?.user?.image} alt="" />
+      <h2>email: {data?.user?.email}</h2>
+
       <ul>
         {rooms.value?.map((room) => (
           <li key={room.roomId}>
