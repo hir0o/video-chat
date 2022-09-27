@@ -65,6 +65,8 @@ button:hover {
 
 .video {
   position: relative;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .video > video {
