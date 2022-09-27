@@ -11,7 +11,7 @@ export const VideoButton: FC<Props> = ({ onClick, isOn }) => {
     <BaseButton
       onClick={onClick}
       icon={isOn ? <IoVideocamSharp /> : <IoVideocamOff color="red" />}
-      aria-label="video button"
+      aria-label={isOn ? 'カメラをオフにする' : 'カメラをオンにする'}
     />
   )
 }

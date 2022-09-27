@@ -1,6 +1,7 @@
 import { AspectRatio, Box, IconButton } from '@chakra-ui/react'
 import { FC } from 'react'
 import { MicButton, VideoButton } from '../Button'
+import { ButtonList } from '../ButtonList'
 
 type Props = {
   _ref: React.RefObject<HTMLVideoElement>
@@ -30,16 +31,12 @@ export const EnterVideo: FC<Props> = ({
           }}
         />
       </AspectRatio>
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        py={2}
-        gap={4}
-        backgroundColor="#f8f9fa"
-      >
-        <VideoButton onClick={toggleCamera} isOn={cameraOn} />
-        <MicButton onClick={toggleMic} isOn={micOn} />
+
+      <Box bg="white">
+        <ButtonList>
+          <VideoButton onClick={toggleCamera} isOn={cameraOn} />
+          <MicButton onClick={toggleMic} isOn={micOn} />
+        </ButtonList>
       </Box>
     </Box>
   )

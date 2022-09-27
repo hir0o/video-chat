@@ -5,6 +5,8 @@ import { useLinkStreamToVideoElm } from '~/hooks/useLinkStreamToVideoElm'
 import { useRTCConnection } from '~/hooks/useRTCConnection'
 import { useSocket } from '~/hooks/useSocket'
 import { MicButton, VideoButton } from '../Button'
+import { LeavButton } from '../Button/LeavButton'
+import { ButtonList } from '../ButtonList'
 
 type Props = {
   name: string
@@ -41,10 +43,11 @@ export const VideoChat: FC<Props> = ({
       <div className="videoContainer" ref={remoteVideoWrapperRef}>
         <video ref={localVideoRef} autoPlay playsInline />
       </div>
-      <Box display="flex" justifyContent="center">
+      <ButtonList>
         <VideoButton onClick={handleToggleCamera} isOn={cameraOn} />
+        <LeavButton />
         <MicButton onClick={handleToggleMic} isOn={micOn} />
-      </Box>
+      </ButtonList>
     </div>
   )
 }
