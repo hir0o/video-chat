@@ -1,10 +1,14 @@
+import { Box, Container, Heading } from '@chakra-ui/react'
 import { FC } from 'react'
-import styles from './Header.module.scss'
 
 export const Header: FC = () => {
   return (
-    <header className={styles.header}>
-      <h1 className={styles.header__title}>ZATSUDAN</h1>
-    </header>
+    <Box as="header" bg="white">
+      <Container maxW="container.xl" py={2}>
+        <Heading as="h1" size="xl">
+          ZATSUDAN
+        </Heading>
+      </Container>
+    </Box>
   )
 }
