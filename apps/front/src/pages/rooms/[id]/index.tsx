@@ -1,3 +1,4 @@
+import { Box } from '@chakra-ui/react'
 import { CustomNextPage, NextPage } from 'next'
 import Head from 'next/head'
 import { useCallback, useRef, useState } from 'react'
@@ -11,47 +12,61 @@ import { useVideoStream } from '~/hooks/useVideoStream'
 const Page: CustomNextPage = () => {
   const [leady, setLeady] = useBoolean(false)
   const [cameraOn, setCameraOn] = useState(true)
-  const [micOn, setMicOn] = useState(false)
+  const [micOn, setMicOn] = useState(true)
   const [name, setName] = useState('')
-  const stream = useVideoStream({
-    cameraOn,
-    micOn,
-  })
+  const [stream, setStream] = useVideoStream()
   const localVideoRef = useRef<HTMLVideoElement>(null)
-  useLinkStreamToVideoElm(stream.value, localVideoRef.current)
+  useLinkStreamToVideoElm(stream, localVideoRef.current)
 
   const handleSubmit = useCallback(() => {
     setLeady(true)
   }, [setLeady])
 
-  const toggleCamera = useCallback(() => {
-    setCameraOn((prev) => !prev)
-  }, [setCameraOn])
+  const handleToggleMic = useCallback(() => {
+    if (stream == null) return
 
-  const toggleMic = useCallback(() => {
     setMicOn((prev) => !prev)
-  }, [setMicOn])
+    stream.getAudioTracks().forEach((track) => {
+      track.enabled = !track.enabled
+    })
+  }, [stream])
+
+  const handleToggleCamera = useCallback(() => {
+    if (stream == null) return
+
+    setCameraOn((prev) => !prev)
+    stream.getVideoTracks().forEach((track) => {
+      track.enabled = !track.enabled
+    })
+  }, [stream])
 
   return (
-    <div>
+    <Box height="full">
       <Head>
         <title>title</title>
       </Head>
       {leady ? (
-        <VideoChat name={name} stream={stream} />
+        <VideoChat
+          name={name}
+          stream={stream}
+          handleToggleMic={handleToggleMic}
+          micOn={micOn}
+          handleToggleCamera={handleToggleCamera}
+          cameraOn={cameraOn}
+        />
       ) : (
         <Enter
           localVideoRef={localVideoRef}
           name={name}
           handleSubmit={handleSubmit}
           setName={setName}
-          toggleCamera={toggleCamera}
+          toggleCamera={handleToggleCamera}
           cameraOn={cameraOn}
-          toggleMic={toggleMic}
+          toggleMic={handleToggleMic}
           micOn={micOn}
         />
       )}
-    </div>
+    </Box>
   )
 }
 

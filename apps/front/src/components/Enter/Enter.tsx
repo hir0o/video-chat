@@ -29,7 +29,7 @@ export const Enter: FC<Props> = ({
       justifyContent="center"
       gap={12}
       alignItems="center"
-      height="100vh"
+      height="100%"
     >
       <EnterVideo
         _ref={localVideoRef}

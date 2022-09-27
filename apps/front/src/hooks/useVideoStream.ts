@@ -1,23 +1,20 @@
-import { useMemo } from 'react'
+import { useState } from 'react'
 import { useAsync } from 'react-use'
-import { AsyncState } from 'react-use/lib/useAsyncFn'
 
-export const useVideoStream = ({
-  cameraOn,
-  micOn,
-}: {
-  cameraOn: boolean
-  micOn: boolean
-}): AsyncState<MediaStream> => {
-  const stream = useAsync(async () => {
+export const useVideoStream = (): ReturnType<
+  typeof useState<MediaStream | undefined>
+> => {
+  const [stream, setStream] = useState<MediaStream | undefined>(undefined)
+
+  useAsync(async () => {
     const constraints: MediaStreamConstraints = {
-      audio: micOn,
-      video: cameraOn,
+      audio: true,
+      video: true,
     }
     const streamObject = await navigator.mediaDevices.getUserMedia(constraints)
 
-    return streamObject
-  }, [micOn, cameraOn])
+    setStream(streamObject)
+  }, [])
 
-  return stream
+  return [stream, setStream]
 }

@@ -22,12 +22,10 @@ export const EnterVideo: FC<Props> = ({
   toggleMic,
   micOn,
 }) => {
-  console.log(cameraOn)
-
   return (
     <Box width="100%" borderRadius="md" boxShadow="md" overflow="hidden">
       <AspectRatio ratio={16 / 9} width="100%" bgColor="black">
-        {cameraOn ? (
+        <Box opacity={cameraOn ? 1 : 0}>
           <video
             ref={_ref}
             autoPlay
@@ -37,9 +35,7 @@ export const EnterVideo: FC<Props> = ({
               backgroundColor: 'black',
             }}
           />
-        ) : (
-          <></>
-        )}
+        </Box>
       </AspectRatio>
       <Box
         display="flex"
