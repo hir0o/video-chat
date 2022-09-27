@@ -1,8 +1,13 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Socket } from 'socket.io-client'
-import { generateVideoElm } from './generateVideoElm'
+import { generateRemoteVideoUnit, generateVideoElm } from './generateVideoElm'
 import { peerConnectionFactory } from './peerConnection'
 import { useRoomId } from './useRoomId'
+
+type RemoteVideo = {
+  name: string
+  stream: MediaStream
+}
 
 export const useRTCConnection = ({
   socket,
@@ -16,6 +21,9 @@ export const useRTCConnection = ({
   name: string
 }) => {
   const roomId = useRoomId()
+  const [remoteVideos, setRemoteVideos] = useState<Map<string, RemoteVideo>>(
+    new Map()
+  )
   const peerConnectionHashRef = useRef<Map<string, RTCPeerConnection>>(
     new Map()
   )
@@ -52,8 +60,10 @@ export const useRTCConnection = ({
         remoteVideo,
         targetId: payload.callerId,
       })
+
+      const videoDom = generateRemoteVideoUnit(remoteVideo, 'tanaka')
       // videoを表示
-      remoteVideoWrapper.appendChild(remoteVideo)
+      remoteVideoWrapper.appendChild(videoDom)
 
       // peerConnectionを保存
       peerConnectionHash.set(payload.callerId, peerConnection)
@@ -99,8 +109,10 @@ export const useRTCConnection = ({
           targetId: payload.callerId,
         })
 
+        const videoDom = generateRemoteVideoUnit(remoteVideo, 'tanaka')
+
         // videoを表示
-        remoteVideoWrapper.appendChild(remoteVideo)
+        remoteVideoWrapper.appendChild(videoDom)
 
         peerConnectionHash.set(payload.callerId, peerConnection)
 
@@ -195,4 +207,6 @@ export const useRTCConnection = ({
       video.remove()
     })
   }, [socket])
+
+  return remoteVideos
 }

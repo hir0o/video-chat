@@ -51,15 +51,17 @@ export const peerConnectionFactory = ({
       console.log('video stream ended')
     })
     const audioStream = stream.getAudioTracks()[0]
-    audioStream.addEventListener('ended', () => {
-      console.log('audio stream ended')
-    })
-    audioStream.addEventListener('mute', () => {
-      console.log('audio stream mute')
-    })
-    audioStream.addEventListener('unmute', () => {
-      console.log('audio stream unmute')
-    })
+    if (audioStream != null) {
+      audioStream.addEventListener('ended', () => {
+        console.log('audio stream ended')
+      })
+      audioStream.addEventListener('mute', () => {
+        console.log('audio stream mute')
+      })
+      audioStream.addEventListener('unmute', () => {
+        console.log('audio stream unmute')
+      })
+    }
     remoteVideo.srcObject = streams[0]
   })
   return connection

@@ -1,5 +1,5 @@
-import { AspectRatio, Box } from '@chakra-ui/react'
-import { FC, useRef } from 'react'
+import { AspectRatio, Box, Container } from '@chakra-ui/react'
+import React, { FC, useEffect, useRef, useState } from 'react'
 import { useLinkStreamToVideoElm } from '~/hooks/useLinkStreamToVideoElm'
 import { useRTCConnection } from '~/hooks/useRTCConnection'
 import { useSocket } from '~/hooks/useSocket'
@@ -27,6 +27,7 @@ export const VideoChat: FC<Props> = ({
   const socket = useSocket()
   const localVideoRef = useRef<HTMLVideoElement>(null)
   const remoteVideoWrapperRef = useRef<HTMLDivElement>(null)
+  const [videoCount, setVideoCount] = useState(0)
   useLinkStreamToVideoElm(stream, localVideoRef.current)
 
   useRTCConnection({
@@ -36,23 +37,44 @@ export const VideoChat: FC<Props> = ({
     name,
   })
 
+  useEffect(() => {
+    if (remoteVideoWrapperRef.current == null) return
+    setVideoCount(remoteVideoWrapperRef.current.childElementCount)
+  }, [])
+
   return (
-    <>
+    <Container
+      maxW={videoCount >= 5 || videoCount === 2 ? 'full' : 'container.xl'}
+    >
       <Box
         display="flex"
         alignItems="center"
         justifyContent="center"
         flexWrap="wrap"
         gap={4}
+        className="video-wrapper"
+        data-video-count={videoCount}
         ref={remoteVideoWrapperRef}
       >
-        <video ref={localVideoRef} autoPlay playsInline />
+        {Array.from({ length: 2 }, (_, i) => (
+          <div className="video">
+            <video
+              data-name="hiroyuki"
+              ref={localVideoRef}
+              autoPlay
+              playsInline
+            />
+            <span>hiroyuki</span>
+          </div>
+        ))}
       </Box>
-      <ButtonList>
-        <VideoButton onClick={handleToggleCamera} isOn={cameraOn} />
-        <LeaveButton />
-        <MicButton onClick={handleToggleMic} isOn={micOn} />
-      </ButtonList>
-    </>
+      <Box position="fixed" bottom={4} left="50%" transform="translateX(-50%)">
+        <ButtonList>
+          <VideoButton onClick={handleToggleCamera} isOn={cameraOn} />
+          <LeaveButton />
+          <MicButton onClick={handleToggleMic} isOn={micOn} />
+        </ButtonList>
+      </Box>
+    </Container>
   )
 }
