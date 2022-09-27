@@ -29,15 +29,6 @@ video {
 table {
   border-collapse: collapse;
 }
-.videoContainer {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-}
-
-.videoContainer > * {
-  width: 100%;
-}
-
 button {
   background: gray;
   color: white;
