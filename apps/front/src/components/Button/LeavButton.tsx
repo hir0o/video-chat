@@ -2,7 +2,7 @@ import { FC } from 'react'
 import { BaseButton } from './BaseButton'
 import { MdCallEnd } from 'react-icons/md'
 
-export const LeavButton: FC = () => {
+export const LeaveButton: FC = () => {
   return (
     <BaseButton
       onClick={() => {}}

@@ -5,7 +5,7 @@ import { useLinkStreamToVideoElm } from '~/hooks/useLinkStreamToVideoElm'
 import { useRTCConnection } from '~/hooks/useRTCConnection'
 import { useSocket } from '~/hooks/useSocket'
 import { MicButton, VideoButton } from '../Button'
-import { LeavButton } from '../Button/LeavButton'
+import { LeaveButton } from '../Button/LeavButton'
 import { ButtonList } from '../ButtonList'
 
 type Props = {
@@ -45,7 +45,7 @@ export const VideoChat: FC<Props> = ({
       </div>
       <ButtonList>
         <VideoButton onClick={handleToggleCamera} isOn={cameraOn} />
-        <LeavButton />
+        <LeaveButton />
         <MicButton onClick={handleToggleMic} isOn={micOn} />
       </ButtonList>
     </div>
