@@ -1,4 +1,4 @@
-import { Box } from '@chakra-ui/react'
+import { Box, Container } from '@chakra-ui/react'
 import { FC } from 'react'
 import { EnterNameInput } from './EnterNameInput'
 import { EnterVideo } from './EnterVideo'
@@ -24,25 +24,27 @@ export const Enter: FC<Props> = ({
   micOn,
 }) => {
   return (
-    <Box
-      display="flex"
-      justifyContent="center"
-      gap={12}
-      alignItems="center"
-      height="100%"
-    >
-      <EnterVideo
-        _ref={localVideoRef}
-        toggleCamera={toggleCamera}
-        cameraOn={cameraOn}
-        toggleMic={toggleMic}
-        micOn={micOn}
-      />
-      <EnterNameInput
-        name={name}
-        setName={setName}
-        handleSubmit={handleSubmit}
-      />
-    </Box>
+    <Container maxW="container.xl" h="full">
+      <Box
+        display="flex"
+        justifyContent="center"
+        gap={12}
+        alignItems="center"
+        height="100%"
+      >
+        <EnterVideo
+          _ref={localVideoRef}
+          toggleCamera={toggleCamera}
+          cameraOn={cameraOn}
+          toggleMic={toggleMic}
+          micOn={micOn}
+        />
+        <EnterNameInput
+          name={name}
+          setName={setName}
+          handleSubmit={handleSubmit}
+        />
+      </Box>
+    </Container>
   )
 }

@@ -46,20 +46,12 @@ button:hover {
   width: 100%;
 }
 
-.video-wrapper[data-video-count='2'] .video {
+:is(.video-wrapper[data-video-count='2'], .video-wrapper[data-video-count='3'], .video-wrapper[data-video-count='4'])
+  .video {
   width: calc(50% - 8px);
 }
-.video-wrapper[data-video-count='3'] .video {
-  width: calc(50% - 8px);
-}
-.video-wrapper[data-video-count='4'] .video {
-  width: calc(50% - 8px);
-}
-.video-wrapper[data-video-count='5'] .video {
-  width: calc(33% - 8px);
-}
-.video-wrapper[data-video-count='6'] .video {
-  background-color: #f0f;
+:is(.video-wrapper[data-video-count='5'], .video-wrapper[data-video-count='6'])
+  .video {
   width: calc(33% - 8px);
 }
 
