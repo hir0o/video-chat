@@ -10,7 +10,7 @@ export const VideoButton: FC<Props> = ({ onClick, isOn }) => {
   return (
     <BaseButton
       onClick={onClick}
-      icon={isOn ? <IoVideocamSharp /> : <IoVideocamOff />}
+      icon={isOn ? <IoVideocamSharp /> : <IoVideocamOff color="red" />}
       aria-label="video button"
     />
   )

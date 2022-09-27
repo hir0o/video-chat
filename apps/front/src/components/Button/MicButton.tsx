@@ -10,7 +10,7 @@ export const MicButton: FC<Props> = ({ onClick, isOn }) => {
   return (
     <BaseButton
       onClick={onClick}
-      icon={isOn ? <IoMicSharp /> : <IoMicOff />}
+      icon={isOn ? <IoMicSharp /> : <IoMicOff color="red" />}
       aria-label="mic button"
     />
   )
