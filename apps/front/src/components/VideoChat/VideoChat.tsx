@@ -1,6 +1,5 @@
-import { Box } from '@chakra-ui/react'
+import { AspectRatio, Box } from '@chakra-ui/react'
 import { FC, useRef } from 'react'
-import { AsyncState } from 'react-use/lib/useAsyncFn'
 import { useLinkStreamToVideoElm } from '~/hooks/useLinkStreamToVideoElm'
 import { useRTCConnection } from '~/hooks/useRTCConnection'
 import { useSocket } from '~/hooks/useSocket'
@@ -38,16 +37,22 @@ export const VideoChat: FC<Props> = ({
   })
 
   return (
-    <div>
-      <h1>Video Chat App</h1>
-      <div className="videoContainer" ref={remoteVideoWrapperRef}>
+    <>
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        flexWrap="wrap"
+        gap={4}
+        ref={remoteVideoWrapperRef}
+      >
         <video ref={localVideoRef} autoPlay playsInline />
-      </div>
+      </Box>
       <ButtonList>
         <VideoButton onClick={handleToggleCamera} isOn={cameraOn} />
         <LeaveButton />
         <MicButton onClick={handleToggleMic} isOn={micOn} />
       </ButtonList>
-    </div>
+    </>
   )
 }
