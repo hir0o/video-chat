@@ -27,24 +27,23 @@ export const VideoChat: FC<Props> = ({
   const socket = useSocket()
   const localVideoRef = useRef<HTMLVideoElement>(null)
   const remoteVideoWrapperRef = useRef<HTMLDivElement>(null)
-  const [videoCount, setVideoCount] = useState(0)
   useLinkStreamToVideoElm(stream, localVideoRef.current)
 
-  useRTCConnection({
+  const connectionLength = useRTCConnection({
     socket,
     stream: stream,
     remoteVideoWrapper: remoteVideoWrapperRef.current,
     name,
   })
-
-  useEffect(() => {
-    if (remoteVideoWrapperRef.current == null) return
-    setVideoCount(remoteVideoWrapperRef.current.childElementCount)
-  }, [])
+  console.log(connectionLength)
 
   return (
     <Container
-      maxW={videoCount >= 5 || videoCount === 2 ? 'full' : 'container.xl'}
+      maxW={
+        connectionLength >= 5 || connectionLength === 2
+          ? 'full'
+          : 'container.xl'
+      }
     >
       <Box
         display="flex"
@@ -53,20 +52,13 @@ export const VideoChat: FC<Props> = ({
         flexWrap="wrap"
         gap={4}
         className="video-wrapper"
-        data-video-count={videoCount}
+        data-video-count={connectionLength}
         ref={remoteVideoWrapperRef}
       >
-        {Array.from({ length: 2 }, (_, i) => (
-          <div className="video">
-            <video
-              data-name="hiroyuki"
-              ref={localVideoRef}
-              autoPlay
-              playsInline
-            />
-            <span>hiroyuki</span>
-          </div>
-        ))}
+        <div className="video">
+          <video data-name={name} ref={localVideoRef} autoPlay playsInline />
+          <span>{name}</span>
+        </div>
       </Box>
       <Box position="fixed" bottom={4} left="50%" transform="translateX(-50%)">
         <ButtonList>

@@ -8,7 +8,7 @@ export const useVideoStream = (): ReturnType<
 
   useAsync(async () => {
     const constraints: MediaStreamConstraints = {
-      audio: true,
+      audio: false,
       video: true,
     }
     const streamObject = await navigator.mediaDevices.getUserMedia(constraints)
