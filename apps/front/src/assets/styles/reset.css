@@ -41,3 +41,39 @@ button {
 button:hover {
   background: black;
 }
+
+.video-wrapper[data-video-count='1'] .video {
+  width: 100%;
+}
+
+:is(.video-wrapper[data-video-count='2'], .video-wrapper[data-video-count='3'], .video-wrapper[data-video-count='4'])
+  .video {
+  width: calc(50% - 8px);
+}
+:is(.video-wrapper[data-video-count='5'], .video-wrapper[data-video-count='6'])
+  .video {
+  width: calc(33% - 8px);
+}
+
+.video {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.video > video {
+  width: 100%;
+  aspect-ratio: 4/3;
+  background-color: #333;
+}
+
+.video > span {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  font-size: 16px;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 4px 8px;
+  border-radius: 4px;
+}

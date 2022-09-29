@@ -1,8 +1,13 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Socket } from 'socket.io-client'
-import { generateVideoElm } from './generateVideoElm'
+import { generateRemoteVideoUnit, generateVideoElm } from './generateVideoElm'
 import { peerConnectionFactory } from './peerConnection'
 import { useRoomId } from './useRoomId'
+
+type RemoteVideo = {
+  name: string
+  stream: MediaStream
+}
 
 export const useRTCConnection = ({
   socket,
@@ -16,17 +21,19 @@ export const useRTCConnection = ({
   name: string
 }) => {
   const roomId = useRoomId()
-  const peerConnectionHashRef = useRef<Map<string, RTCPeerConnection>>(
-    new Map()
-  )
-  const peerConnectionHash = peerConnectionHashRef.current
+  const [peerConnections, setPeerConnections] = useState<{
+    [key: string]: RTCPeerConnection
+  }>({})
   // callを送る処理
   useEffect(() => {
     if (socket == null) return
 
     socket.emit('getId')
 
-    socket.emit('call', roomId)
+    socket.emit('call', {
+      roomId,
+      userName: name,
+    })
 
     return () => {
       socket.off('getId')
@@ -39,43 +46,52 @@ export const useRTCConnection = ({
     if (stream == null) return
     if (remoteVideoWrapper == null) return
     // callが来たら、peerConnectionを作成して、offerを送信する
-    socket.on('call', async (payload: { callerId: string }) => {
-      console.log('call userId', payload.callerId)
+    socket.on(
+      'call',
+      async (payload: { callerId: string; userName: string }) => {
+        console.log('call userId', payload.callerId)
 
-      const remoteVideo = generateVideoElm(payload.callerId)
-      console.log('on message call')
+        const remoteVideo = generateVideoElm(payload.callerId)
+        console.log('on message call')
 
-      // peerConnectionを作成
-      const peerConnection = peerConnectionFactory({
-        stream,
-        socket,
-        remoteVideo,
-        targetId: payload.callerId,
-      })
-      // videoを表示
-      remoteVideoWrapper.appendChild(remoteVideo)
+        // peerConnectionを作成
+        const peerConnection = peerConnectionFactory({
+          stream,
+          socket,
+          remoteVideo,
+          targetId: payload.callerId,
+        })
 
-      // peerConnectionを保存
-      peerConnectionHash.set(payload.callerId, peerConnection)
+        const videoDom = generateRemoteVideoUnit(remoteVideo, payload.userName)
+        // videoを表示
+        remoteVideoWrapper.appendChild(videoDom)
 
-      // offerを作成
-      const offer = await peerConnection.createOffer()
-      // localDescriptionにofferをセット
-      await peerConnection.setLocalDescription(offer)
-      // offerを送信
-      console.log('send message offer')
+        // peerConnectionを保存
+        setPeerConnections((prev) => ({
+          ...prev,
+          [payload.callerId]: peerConnection,
+        }))
 
-      socket.emit('offer', {
-        roomId,
-        targetId: payload.callerId,
-        offer,
-      })
-    })
+        // offerを作成
+        const offer = await peerConnection.createOffer()
+        // localDescriptionにofferをセット
+        await peerConnection.setLocalDescription(offer)
+        // offerを送信
+        console.log('send message offer')
+
+        socket.emit('offer', {
+          roomId,
+          targetId: payload.callerId,
+          offer,
+          userName: name,
+        })
+      }
+    )
 
     return () => {
       socket.off('call')
     }
-  }, [socket, stream, roomId, peerConnectionHash, remoteVideoWrapper])
+  }, [socket, stream, roomId, peerConnections, remoteVideoWrapper])
 
   // offerが来た時の処理
   useEffect(() => {
@@ -88,6 +104,7 @@ export const useRTCConnection = ({
       async (payload: {
         callerId: string
         offer: RTCSessionDescriptionInit
+        userName: string
       }) => {
         const remoteVideo = generateVideoElm(payload.callerId)
         console.log('on message offer', payload)
@@ -99,10 +116,15 @@ export const useRTCConnection = ({
           targetId: payload.callerId,
         })
 
-        // videoを表示
-        remoteVideoWrapper.appendChild(remoteVideo)
+        const videoDom = generateRemoteVideoUnit(remoteVideo, payload.userName)
 
-        peerConnectionHash.set(payload.callerId, peerConnection)
+        // videoを表示
+        remoteVideoWrapper.appendChild(videoDom)
+
+        setPeerConnections((prev) => ({
+          ...prev,
+          [payload.callerId]: peerConnection,
+        }))
 
         await peerConnection.setRemoteDescription(payload.offer)
         const answer = await peerConnection.createAnswer()
@@ -119,7 +141,7 @@ export const useRTCConnection = ({
     return () => {
       socket.off('offer')
     }
-  }, [socket, stream, roomId, peerConnectionHash, remoteVideoWrapper])
+  }, [socket, stream, roomId, peerConnections, remoteVideoWrapper])
 
   // answerが来た時の処理
   useEffect(() => {
@@ -134,7 +156,7 @@ export const useRTCConnection = ({
         answer: RTCSessionDescriptionInit
       }) => {
         console.log('on message answer', payload)
-        const peerConnection = peerConnectionHash.get(payload.callerId)
+        const peerConnection = peerConnections[payload.callerId]
 
         if (peerConnection == null) {
           // throw new Error("peerConnection doesn't exist")
@@ -148,7 +170,7 @@ export const useRTCConnection = ({
     return () => {
       socket.off('answer')
     }
-  }, [socket, stream, roomId, peerConnectionHash, remoteVideoWrapper])
+  }, [socket, stream, roomId, peerConnections, remoteVideoWrapper])
 
   useEffect(() => {
     if (socket == null) return
@@ -169,7 +191,7 @@ export const useRTCConnection = ({
           candidate: payload.value.candidate,
         })
 
-        const peerConnection = peerConnectionHash.get(payload.callerId)
+        const peerConnection = peerConnections[payload.callerId]
 
         if (peerConnection == null) {
           // throw new Error("peerConnection doesn't exist")
@@ -179,20 +201,23 @@ export const useRTCConnection = ({
         void peerConnection.addIceCandidate(candidate)
       }
     )
-  }, [socket, peerConnectionHash])
+  }, [socket, peerConnections])
 
-  // ユーザが離脱した時に、videoを削除する
   useEffect(() => {
     if (socket == null) return
 
     socket.on('leave', (payload: { callerId: string }) => {
+      // peerConnectionを削除
+      const { [payload.callerId]: _, ...rest } = peerConnections
+      setPeerConnections(rest)
+
       const video = document.getElementById(payload.callerId)
-
-      console.log(video)
-
       if (video == null) return
 
       video.remove()
     })
   }, [socket])
+
+  // other user + me
+  return Object.values(peerConnections).length + 1
 }

@@ -1,5 +1,5 @@
-import { AspectRatio, Box } from '@chakra-ui/react'
-import { FC, useRef } from 'react'
+import { AspectRatio, Box, Container } from '@chakra-ui/react'
+import React, { FC, useEffect, useRef, useState } from 'react'
 import { useLinkStreamToVideoElm } from '~/hooks/useLinkStreamToVideoElm'
 import { useRTCConnection } from '~/hooks/useRTCConnection'
 import { useSocket } from '~/hooks/useSocket'
@@ -29,30 +29,44 @@ export const VideoChat: FC<Props> = ({
   const remoteVideoWrapperRef = useRef<HTMLDivElement>(null)
   useLinkStreamToVideoElm(stream, localVideoRef.current)
 
-  useRTCConnection({
+  const connectionLength = useRTCConnection({
     socket,
     stream: stream,
     remoteVideoWrapper: remoteVideoWrapperRef.current,
     name,
   })
+  console.log(connectionLength)
 
   return (
-    <>
+    <Container
+      maxW={
+        connectionLength >= 5 || connectionLength === 2
+          ? 'full'
+          : 'container.xl'
+      }
+    >
       <Box
         display="flex"
         alignItems="center"
         justifyContent="center"
         flexWrap="wrap"
         gap={4}
+        className="video-wrapper"
+        data-video-count={connectionLength}
         ref={remoteVideoWrapperRef}
       >
-        <video ref={localVideoRef} autoPlay playsInline />
+        <div className="video">
+          <video data-name={name} ref={localVideoRef} autoPlay playsInline />
+          <span>{name}</span>
+        </div>
       </Box>
-      <ButtonList>
-        <VideoButton onClick={handleToggleCamera} isOn={cameraOn} />
-        <LeaveButton />
-        <MicButton onClick={handleToggleMic} isOn={micOn} />
-      </ButtonList>
-    </>
+      <Box position="fixed" bottom={4} left="50%" transform="translateX(-50%)">
+        <ButtonList>
+          <VideoButton onClick={handleToggleCamera} isOn={cameraOn} />
+          <LeaveButton />
+          <MicButton onClick={handleToggleMic} isOn={micOn} />
+        </ButtonList>
+      </Box>
+    </Container>
   )
 }
