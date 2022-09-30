@@ -1,11 +1,11 @@
-import { AspectRatio, Box, Container } from '@chakra-ui/react'
-import React, { FC, useEffect, useRef, useState } from 'react'
+import { Box, Container } from '@chakra-ui/react'
+import { FC, useRef } from 'react'
 import { useLeaveTheRoomConfirm } from '~/hooks/useLeaveTheRoomConfirm'
 import { useLinkStreamToVideoElm } from '~/hooks/useLinkStreamToVideoElm'
 import { useRTCConnection } from '~/hooks/useRTCConnection'
 import { useSocket } from '~/hooks/useSocket'
 import { MicButton, VideoButton } from '../Button'
-import { LeaveButton } from '../Button/LeavButton'
+import { LeaveButton } from '../Button/LeaveButton'
 import { ButtonList } from '../ButtonList'
 
 type Props = {
@@ -15,7 +15,6 @@ type Props = {
   cameraOn: boolean
   handleToggleMic: () => void
   handleToggleCamera: () => void
-  // handleLeaveTheRoom: () => void
 }
 
 export const VideoChat: FC<Props> = ({
