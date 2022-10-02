@@ -1,5 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRouter } from 'next/router'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Socket } from 'socket.io-client'
+import { useAlert } from '~/store/alert'
 import { generateRemoteVideoUnit, generateVideoElm } from './generateVideoElm'
 import { peerConnectionFactory } from './peerConnection'
 import { useRoomId } from './useRoomId'
@@ -21,9 +23,16 @@ export const useRTCConnection = ({
   name: string
 }) => {
   const roomId = useRoomId()
+  const { showAlert } = useAlert()
+  const router = useRouter()
   const [peerConnections, setPeerConnections] = useState<{
-    [key: string]: RTCPeerConnection
+    [socketId: string]: {
+      connection: RTCPeerConnection
+      name: string
+    }
   }>({})
+  const [localPeerConnection, setLocalPeerConnection] =
+    useState<RTCPeerConnection | null>(null)
   // callを送る処理
   useEffect(() => {
     if (socket == null) return
@@ -38,7 +47,7 @@ export const useRTCConnection = ({
     return () => {
       socket.off('getId')
     }
-  }, [socket, roomId])
+  }, [socket, roomId, name])
 
   // callされた時の処理
   useEffect(() => {
@@ -51,7 +60,7 @@ export const useRTCConnection = ({
       async (payload: { callerId: string; userName: string }) => {
         console.log('call userId', payload.callerId)
 
-        const remoteVideo = generateVideoElm(payload.callerId)
+        const remoteVideo = generateVideoElm()
         console.log('on message call')
 
         // peerConnectionを作成
@@ -61,15 +70,23 @@ export const useRTCConnection = ({
           remoteVideo,
           targetId: payload.callerId,
         })
+        setLocalPeerConnection(peerConnection)
 
-        const videoDom = generateRemoteVideoUnit(remoteVideo, payload.userName)
+        const videoDom = generateRemoteVideoUnit(
+          remoteVideo,
+          payload.callerId,
+          payload.userName
+        )
         // videoを表示
         remoteVideoWrapper.appendChild(videoDom)
 
         // peerConnectionを保存
         setPeerConnections((prev) => ({
           ...prev,
-          [payload.callerId]: peerConnection,
+          [payload.callerId]: {
+            connection: peerConnection,
+            name: payload.userName,
+          },
         }))
 
         // offerを作成
@@ -91,7 +108,7 @@ export const useRTCConnection = ({
     return () => {
       socket.off('call')
     }
-  }, [socket, stream, roomId, peerConnections, remoteVideoWrapper])
+  }, [socket, stream, roomId, peerConnections, remoteVideoWrapper, name])
 
   // offerが来た時の処理
   useEffect(() => {
@@ -106,7 +123,7 @@ export const useRTCConnection = ({
         offer: RTCSessionDescriptionInit
         userName: string
       }) => {
-        const remoteVideo = generateVideoElm(payload.callerId)
+        const remoteVideo = generateVideoElm()
         console.log('on message offer', payload)
 
         const peerConnection = peerConnectionFactory({
@@ -116,14 +133,23 @@ export const useRTCConnection = ({
           targetId: payload.callerId,
         })
 
-        const videoDom = generateRemoteVideoUnit(remoteVideo, payload.userName)
+        setLocalPeerConnection(peerConnection)
+
+        const videoDom = generateRemoteVideoUnit(
+          remoteVideo,
+          payload.callerId,
+          payload.userName
+        )
 
         // videoを表示
         remoteVideoWrapper.appendChild(videoDom)
 
         setPeerConnections((prev) => ({
           ...prev,
-          [payload.callerId]: peerConnection,
+          [payload.callerId]: {
+            connection: peerConnection,
+            name: payload.userName,
+          },
         }))
 
         await peerConnection.setRemoteDescription(payload.offer)
@@ -163,7 +189,7 @@ export const useRTCConnection = ({
           return
         }
 
-        await peerConnection.setRemoteDescription(payload.answer)
+        await peerConnection.connection.setRemoteDescription(payload.answer)
       }
     )
 
@@ -198,7 +224,7 @@ export const useRTCConnection = ({
           return
         }
 
-        void peerConnection.addIceCandidate(candidate)
+        void peerConnection.connection.addIceCandidate(candidate)
       }
     )
   }, [socket, peerConnections])
@@ -206,17 +232,46 @@ export const useRTCConnection = ({
   useEffect(() => {
     if (socket == null) return
 
-    socket.on('leave', (payload: { callerId: string }) => {
-      // peerConnectionを削除
-      const { [payload.callerId]: _, ...rest } = peerConnections
-      setPeerConnections(rest)
+    console.log('leaveEffect', peerConnections)
 
+    socket.on('leave', (payload: { callerId: string; userName: string }) => {
+      setPeerConnections((prev) => {
+        const { [payload.callerId]: connection, ...rest } = prev
+        if (connection == null) return prev
+
+        showAlert({
+          type: 'info',
+          text: `${connection.name}さんが退出しました`,
+        })
+        connection.connection.close()
+        return rest
+      })
       const video = document.getElementById(payload.callerId)
+
       if (video == null) return
 
       video.remove()
     })
-  }, [socket])
+  }, [socket, peerConnections, showAlert])
+
+  const handleLeave = useCallback(() => {
+    localPeerConnection?.close()
+    socket?.emit('leave', {
+      name,
+      roomId,
+    })
+  }, [socket, localPeerConnection, name, roomId])
+
+  useEffect(() => {
+    router.events.on('routeChangeStart', handleLeave)
+    window.addEventListener('beforeunload', handleLeave)
+    return () => {
+      router.events.off('routeChangeStart', handleLeave)
+      window.removeEventListener('beforeunload', handleLeave)
+    }
+  }, [handleLeave, router.events])
+
+  console.log({ peerConnections })
 
   // other user + me
   return Object.values(peerConnections).length + 1

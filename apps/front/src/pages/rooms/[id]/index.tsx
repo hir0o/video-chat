@@ -1,6 +1,7 @@
 import { Box } from '@chakra-ui/react'
 import { CustomNextPage, NextPage } from 'next'
 import Head from 'next/head'
+import { useRouter } from 'next/router'
 import { useCallback, useRef, useState } from 'react'
 import { useBoolean, useToggle } from 'react-use'
 import { Enter } from '~/components/Enter'
@@ -17,6 +18,7 @@ const Page: CustomNextPage = () => {
   const [stream, setStream] = useVideoStream()
   const localVideoRef = useRef<HTMLVideoElement>(null)
   useLinkStreamToVideoElm(stream, localVideoRef.current)
+  const router = useRouter()
 
   const handleSubmit = useCallback(() => {
     setLeady(true)
@@ -53,6 +55,7 @@ const Page: CustomNextPage = () => {
           micOn={micOn}
           handleToggleCamera={handleToggleCamera}
           cameraOn={cameraOn}
+          // handleLeaveTheRoom={handleLeaveTheRoom}
         />
       ) : (
         <Enter
