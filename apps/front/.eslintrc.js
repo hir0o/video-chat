@@ -24,7 +24,7 @@ module.exports = {
     sourceType: 'module',
     project: './tsconfig.json',
   },
-  plugins: ['react', '@typescript-eslint'],
+  plugins: ['react', '@typescript-eslint', 'import-access'],
   rules: {
     'react/function-component-definition': [
       2,
@@ -49,7 +49,7 @@ module.exports = {
         extensions: ['.jsx', '.tsx'],
       },
     ],
-    'arrow-body-style': ['error', 'as-needed'],
+    'arrow-body-style': 0,
     'no-use-before-define': [
       'error',
       { functions: false, classes: true, variables: true },
@@ -73,7 +73,7 @@ module.exports = {
         },
       },
     ],
+    'import-access/jsdoc': ['error'],
   },
-  'arrow-style-style': 0,
   ignorePatterns: ['.eslintrc.*', '*.config.*'],
 }
