@@ -1,13 +1,20 @@
-import { CustomNextPage } from 'next'
+import { CustomNextPage, GetServerSideProps } from 'next'
 import { useSession } from 'next-auth/react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { Layout } from '~/components/Layout'
 import { useRooms } from '~/hooks/useRooms'
+import { useSpeechRecognition } from '~/hooks/useSpeechRecognition'
+
+export const getServerSideProps: GetServerSideProps = async (context) => ({
+  props: {},
+})
 
 const Index: CustomNextPage = () => {
   const rooms = useRooms()
   const { data } = useSession()
+
+  const res = useSpeechRecognition()
 
   return (
     <div>
@@ -15,10 +22,6 @@ const Index: CustomNextPage = () => {
         <title>room selection</title>
       </Head>
       <h1>rooms</h1>
-      <h2>user: {data?.user?.name}</h2>
-      <img src={data?.user?.image} alt="" />
-      <h2>email: {data?.user?.email}</h2>
-
       <ul>
         {rooms.value?.map((room) => (
           <li key={room.roomId}>
@@ -40,8 +43,6 @@ const Index: CustomNextPage = () => {
   )
 }
 
-Index.getLayout = (page) => {
-  return <Layout>{page}</Layout>
-}
+Index.getLayout = (page) => <Layout>{page}</Layout>
 
 export default Index
