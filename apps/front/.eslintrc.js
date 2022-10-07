@@ -49,7 +49,7 @@ module.exports = {
         extensions: ['.jsx', '.tsx'],
       },
     ],
-    'arrow-body-style': ['error', 'as-needed'],
+    'arrow-body-style': 0,
     'no-use-before-define': [
       'error',
       { functions: false, classes: true, variables: true },
@@ -74,6 +74,5 @@ module.exports = {
       },
     ],
   },
-  'arrow-style-style': 0,
   ignorePatterns: ['.eslintrc.*', '*.config.*'],
 }

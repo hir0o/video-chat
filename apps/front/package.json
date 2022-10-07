@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "dev": "next dev -p 8080",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start -p 8080",
     "tsm": "typed-scss-modules src --watch --implementation sass --nameFormat none --exportType default --aliasPrefixes.@ src/"
@@ -19,6 +19,7 @@
     "react": "^18.0.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.4.0",
+    "react-speech-recognition": "^3.9.1",
     "react-use": "^17.4.0",
     "recoil": "^0.7.5",
     "sass": "^1.55.0",

@@ -1,4 +1,4 @@
-import { AspectRatio, Box, IconButton } from '@chakra-ui/react'
+import { AspectRatio, Box } from '@chakra-ui/react'
 import { FC } from 'react'
 import { MicButton, VideoButton } from '../Button'
 import { ButtonList } from '../ButtonList'
