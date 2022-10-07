@@ -1,61 +1,50 @@
-// import { useCallback, useEffect, useState } from 'react'
-// import { receiveMessageOnPort } from 'worker_threads'
-// import { useWindow } from './useWindow'
+import { useCallback, useEffect, useState } from 'react'
+import { receiveMessageOnPort } from 'worker_threads'
+import { useWindow } from './useWindow'
 
-// export const useSpeechRecognition = () => {
-//   const window = useWindow()
-//   const [recognition, setRecognition] = useState<any>(null)
-//   const [transcript, setTranscript] = useState<Set<string>>(new Set())
+export const useSpeechRecognition = () => {
+  const window = useWindow()
+  const [recognition, setRecognition] = useState<SpeechRecognition | null>(null)
+  const [transcript, setTranscript] = useState<Set<string>>(new Set())
 
-//   useEffect(() => {
-//     const SpeechRecognition =
-//       window?.SpeechRecognition || window?.webkitSpeechRecognition
-//     console.log(window, SpeechRecognition)
+  const onResult = (event: any) => {
+    console.log('onResult')
 
-//     if (SpeechRecognition == null) return
-//     const r = new SpeechRecognition()
-//     setRecognition(r)
-//   }, [window])
+    for (const res of event.results) {
+      console.log(res[0].transcript)
+      console.log('isFinal', res.isFinal)
 
-//   // const handleStart = useCallback(() => {
-//   //   recognition.start()
-//   // }, [recognition])
+      if (!res.isFinal) return
 
-//   useEffect(() => {
-//     if (recognition == null) return
-//     recognition.start()
-//   }, [recognition])
+      setTranscript((prev) => {
+        prev.add(res[0].transcript)
 
-//   useEffect(() => {
-//     if (recognition == null) return
-//     recognition.continuous = true
-//     recognition.interimResults = true
+        return prev
+      })
+    }
+  }
 
-//     recognition.addEventListener('result', onResult)
-//     return () => {
-//       console.log('remove event')
+  useEffect(() => {
+    console.log('window?')
 
-//       recognition.removeEventListener('result', onResult)
-//     }
-//   }, [recognition])
+    const SpeechRecognition =
+      window?.SpeechRecognition || window?.webkitSpeechRecognition
 
-//   const onResult = (event: any) => {
-//     console.log(event)
+    if (SpeechRecognition == null) return
+    const r = new SpeechRecognition()
+    r.continuous = true
+    r.interimResults = true
+    r.start()
+    console.log(r)
+    setRecognition(r)
+    r.addEventListener('result', onResult)
+    return () => {
+      r.removeEventListener('result', onResult)
+      r.stop()
+    }
+  }, [window])
 
-//     for (const res of event.results) {
-//       if (!res.isFinal) return
-//       setTranscript((prev) => {
-//         prev.add(res[0].transcript)
-//         console.log(prev)
-
-//         return prev
-//       })
-//     }
-//   }
-
-//   return {
-//     transcript,
-//   }
-// }
-
-export default {}
+  return {
+    transcript,
+  }
+}

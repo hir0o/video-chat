@@ -4,6 +4,7 @@ import { useLeaveTheRoomConfirm } from '~/hooks/useLeaveTheRoomConfirm'
 import { useLinkStreamToVideoElm } from '~/hooks/useLinkStreamToVideoElm'
 import { useRTCConnection } from '~/hooks/useRTCConnection'
 import { useSocket } from '~/hooks/useSocket'
+import { useSpeechRecognition } from '~/hooks/useSpeechRecognition'
 import { MicButton, VideoButton } from '../Button'
 import { LeaveButton } from '../Button/LeaveButton'
 import { ButtonList } from '../ButtonList'
@@ -28,11 +29,14 @@ export const VideoChat: FC<Props> = ({
   const socket = useSocket()
   const localVideoRef = useRef<HTMLVideoElement>(null)
   const remoteVideoWrapperRef = useRef<HTMLDivElement>(null)
+
   useLinkStreamToVideoElm(stream, localVideoRef.current)
+
+  useSpeechRecognition()
 
   const connectionLength = useRTCConnection({
     socket,
-    stream: stream,
+    stream,
     remoteVideoWrapper: remoteVideoWrapperRef.current,
     name,
   })

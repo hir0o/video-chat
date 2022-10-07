@@ -29,6 +29,7 @@ const Page: CustomNextPage = () => {
 
     setMicOn((prev) => !prev)
     stream.getAudioTracks().forEach((track) => {
+      // eslint-disable-next-line no-param-reassign
       track.enabled = !track.enabled
     })
   }, [stream])
@@ -38,6 +39,7 @@ const Page: CustomNextPage = () => {
 
     setCameraOn((prev) => !prev)
     stream.getVideoTracks().forEach((track) => {
+      // eslint-disable-next-line no-param-reassign
       track.enabled = !track.enabled
     })
   }, [stream])
@@ -73,8 +75,6 @@ const Page: CustomNextPage = () => {
   )
 }
 
-Page.getLayout = (page) => {
-  return <Layout>{page}</Layout>
-}
+Page.getLayout = (page) => <Layout>{page}</Layout>
 
 export default Page
