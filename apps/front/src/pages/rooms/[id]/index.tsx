@@ -11,9 +11,11 @@ import { Layout } from '~/components/Layout'
 import { VideoChat } from '~/components/VideoChat'
 import { addUserToRoom } from '~/firebase/db'
 import { useLinkStreamToVideoElm } from '~/hooks/useLinkStreamToVideoElm'
+import { useSocket } from '~/hooks/useSocket'
 import { useVideoStream } from '~/hooks/useVideoStream'
 
 const Page: CustomNextPage = () => {
+  const socket = useSocket()
   const [leady, setLeady] = useBoolean(false)
   const [cameraOn, setCameraOn] = useState(true)
   const [micOn, setMicOn] = useState(true)
@@ -25,16 +27,17 @@ const Page: CustomNextPage = () => {
   const { data } = useSession()
 
   const handleSubmit = useCallback(() => {
+    if (socket === null) return
     const roomId = router.query.id as string
     // TODO: userIdどうしようか悩む。
     //  今後socketのidと紐付けが必要になったら対応する。
-    void addUserToRoom(roomId, 'test', {
+    void addUserToRoom(roomId, socket.id, {
       name,
       image: data?.user?.image || '',
     }).then(() => {
       setLeady(true)
     })
-  }, [setLeady, name, data, router.query.id])
+  }, [setLeady, name, data, router.query.id, socket])
 
   const handleToggleMic = useCallback(() => {
     if (stream == null) return
@@ -67,6 +70,7 @@ const Page: CustomNextPage = () => {
           stream={stream}
           handleToggleMic={handleToggleMic}
           micOn={micOn}
+          socket={socket}
           handleToggleCamera={handleToggleCamera}
           cameraOn={cameraOn}
           // handleLeaveTheRoom={handleLeaveTheRoom}

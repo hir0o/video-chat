@@ -1,4 +1,5 @@
 import { Box, Button, Heading, List, ListItem } from '@chakra-ui/react'
+import { useRouter } from 'next/router'
 import { FC } from 'react'
 import { Room, RoomWithId } from '~/model'
 import { DashboardBox } from './DashboardBox'
@@ -11,6 +12,12 @@ type Props = {
 
 /** @package */
 export const Dashboard: FC<Props> = ({ room }) => {
+  const router = useRouter()
+
+  const handleClick = () => {
+    void router.push(`/rooms/${room.id}`)
+  }
+
   return (
     <Box
       bgColor="gray.200"
@@ -45,7 +52,9 @@ export const Dashboard: FC<Props> = ({ room }) => {
           <span>198%!!</span>
         </DashboardBox>
       </Box>
-      <Button colorScheme="blue">この部屋に参加する</Button>
+      <Button onClick={handleClick} colorScheme="blue">
+        この部屋に参加する
+      </Button>
     </Box>
   )
 }

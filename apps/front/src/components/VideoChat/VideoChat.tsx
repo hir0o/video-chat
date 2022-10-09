@@ -1,9 +1,9 @@
 import { Box, Container } from '@chakra-ui/react'
 import { FC, useRef } from 'react'
+import { Socket } from 'socket.io-client'
 import { useLeaveTheRoomConfirm } from '~/hooks/useLeaveTheRoomConfirm'
 import { useLinkStreamToVideoElm } from '~/hooks/useLinkStreamToVideoElm'
 import { useRTCConnection } from '~/hooks/useRTCConnection'
-import { useSocket } from '~/hooks/useSocket'
 import { useSpeechRecognition } from '~/hooks/useSpeechRecognition'
 import { MicButton, VideoButton } from '../Button'
 import { LeaveButton } from '../Button/LeaveButton'
@@ -14,6 +14,7 @@ type Props = {
   stream: MediaStream | undefined
   micOn: boolean
   cameraOn: boolean
+  socket: Socket | null
   handleToggleMic: () => void
   handleToggleCamera: () => void
 }
@@ -23,10 +24,10 @@ export const VideoChat: FC<Props> = ({
   stream,
   micOn,
   cameraOn,
+  socket,
   handleToggleMic,
   handleToggleCamera,
 }) => {
-  const socket = useSocket()
   const localVideoRef = useRef<HTMLVideoElement>(null)
   const remoteVideoWrapperRef = useRef<HTMLDivElement>(null)
 
