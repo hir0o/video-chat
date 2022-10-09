@@ -9,9 +9,10 @@ import { Layout } from '~/components/Layout'
 import { createRoom } from '~/firebase/db'
 import { useRooms } from '~/hooks/useRooms'
 import { useSpeech } from '~/hooks/useSpeech'
+import { useSubscribeRoomList } from '~/hooks/useSubscribeRoomList'
 
 const Index: CustomNextPage = () => {
-  const rooms = useRooms()
+  const { data: rooms } = useSubscribeRoomList()
   const router = useRouter()
 
   const handleCreteRoom = async () => {
@@ -38,7 +39,7 @@ const Index: CustomNextPage = () => {
           gap={8}
         >
           {rooms.map((item) => (
-            <Dashboard room={item} key={item.id} />
+            <Dashboard roomId={item.id} key={item.id} />
           ))}
         </Box>
 

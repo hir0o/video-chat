@@ -1,21 +1,27 @@
 import { Box, Button, Heading, List, ListItem } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import { FC } from 'react'
+import { useSubscribeRoom } from '~/hooks/useSubscribeRoom'
 import { Room, RoomWithId } from '~/model'
 import { DashboardBox } from './DashboardBox'
 import { DashboardScript } from './DashboardScript'
 import { IconList } from './IconList'
 
 type Props = {
-  room: RoomWithId
+  roomId: RoomWithId['id']
 }
 
 /** @package */
-export const Dashboard: FC<Props> = ({ room }) => {
+export const Dashboard: FC<Props> = ({ roomId }) => {
   const router = useRouter()
+  const { data: room } = useSubscribeRoom(roomId)
 
   const handleClick = () => {
-    void router.push(`/rooms/${room.id}`)
+    void router.push(`/rooms/${roomId}`)
+  }
+
+  if (room === undefined || Object.keys(room.users).length === 0) {
+    return null
   }
 
   return (
@@ -30,7 +36,7 @@ export const Dashboard: FC<Props> = ({ room }) => {
       alignItems="center"
     >
       <Heading as="h2" fontSize="2xl" p={4}>
-        <span>{room.id}</span>
+        <span>ルーム</span>
       </Heading>
       <Box display="grid" gridTemplateColumns="2fr 1fr" gap={4} w="100%">
         <DashboardBox title="メンバー">

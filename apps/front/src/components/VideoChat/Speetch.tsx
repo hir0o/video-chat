@@ -14,7 +14,7 @@ const FCSpeech: FC<Props> = ({ user }) => {
   const router = useRouter()
   const data = useSpeech()
 
-  if (data !== prevData) {
+  if (data !== prevData && data !== '') {
     setPrevData(data)
     const message: SpeechMessage = {
       name: user.name,

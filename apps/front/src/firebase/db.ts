@@ -4,6 +4,7 @@ import {
   collection,
   doc,
   getDocs,
+  onSnapshot,
   setDoc,
   updateDoc,
 } from 'firebase/firestore'
@@ -29,7 +30,7 @@ export const createRoom = async (): Promise<string> => {
 
   const docRes = await addDoc(cl, {
     users: {},
-    speeches: {},
+    speeches: [],
     keyPhrases: [],
   })
 
@@ -73,6 +74,30 @@ export const addMessageToRoom = async (
   return updateDoc(roomDoc, {
     speeches: arrayUnion(speech),
   })
+}
+
+// roomの変更をリッスンする
+export const listenRoom = (roomId: string, callback: (room: Room) => void) => {
+  const unsb = onSnapshot(doc(db, 'rooms', roomId), (item) => {
+    const room = item.data() as Room
+    callback(room)
+  })
+
+  return unsb
+}
+
+export const listenRoomList = (callback: (room: RoomWithId[]) => void) => {
+  const unsb = onSnapshot(collection(db, 'rooms'), (item) => {
+    const room = item.docs.map((reItem) => ({
+      id: reItem.id,
+      ...reItem.data(),
+    })) as RoomWithId[]
+    console.log('roomList のはず', room)
+
+    callback(room)
+  })
+
+  return unsb
 }
 
 const rooms = {
