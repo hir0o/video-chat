@@ -1,13 +1,23 @@
 import { Box, Container } from '@chakra-ui/react'
-import { FC, useRef } from 'react'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/router'
+import { FC, useEffect, useRef, useState } from 'react'
+import { useToggle } from 'react-use'
 import { Socket } from 'socket.io-client'
+import { addUserToRoom } from '~/firebase/db'
 import { useLeaveTheRoomConfirm } from '~/hooks/useLeaveTheRoomConfirm'
-import { useLinkStreamToVideoElm } from '~/hooks/useLinkStreamToVideoElm'
+import {
+  useAddVideo,
+  useLinkStreamToVideoElm,
+} from '~/hooks/useLinkStreamToVideoElm'
 import { useRTCConnection } from '~/hooks/useRTCConnection'
+import { useSocket } from '~/hooks/useSocket'
 import { useSpeechRecognition } from '~/hooks/useSpeechRecognition'
+import { User } from '~/model'
 import { MicButton, VideoButton } from '../Button'
 import { LeaveButton } from '../Button/LeaveButton'
 import { ButtonList } from '../ButtonList'
+import { Speech } from './Speetch'
 
 type Props = {
   name: string
@@ -30,15 +40,19 @@ export const VideoChat: FC<Props> = ({
 }) => {
   const localVideoRef = useRef<HTMLVideoElement>(null)
   const remoteVideoWrapperRef = useRef<HTMLDivElement>(null)
+  const { data } = useSession()
 
-  useLinkStreamToVideoElm(stream, localVideoRef.current)
+  const user: User = {
+    name,
+    image: data?.user?.image || '',
+  }
 
-  useSpeechRecognition()
+  useLinkStreamToVideoElm(stream, localVideoRef)
 
   const connectionLength = useRTCConnection({
     socket,
     stream,
-    remoteVideoWrapper: remoteVideoWrapperRef.current,
+    remoteVideoWrapperRef,
     name,
   })
 
@@ -64,7 +78,13 @@ export const VideoChat: FC<Props> = ({
           ref={remoteVideoWrapperRef}
         >
           <div className="video">
-            <video data-name={name} ref={localVideoRef} autoPlay playsInline />
+            <video
+              data-name={name}
+              ref={localVideoRef}
+              id="me"
+              autoPlay
+              playsInline
+            />
             <span>{name}</span>
           </div>
         </Box>
@@ -81,6 +101,7 @@ export const VideoChat: FC<Props> = ({
           </ButtonList>
         </Box>
         {modal}
+        <Speech socket={socket} user={user} />
       </>
     </Container>
   )

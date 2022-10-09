@@ -3,12 +3,12 @@ import SpeechRecognition, {
   useSpeechRecognition,
 } from 'react-speech-recognition'
 
-export const useSpeech = (): string[] => {
+export const useSpeech = (): string => {
   const { listening, finalTranscript } = useSpeechRecognition()
 
   useEffect(() => {
     if (listening) return
-    SpeechRecognition.startListening({
+    void SpeechRecognition.startListening({
       language: 'ja-JP',
       continuous: true,
     })
@@ -16,5 +16,5 @@ export const useSpeech = (): string[] => {
 
   const result = finalTranscript.split(' ')
 
-  return result
+  return result[result.length - 1]
 }

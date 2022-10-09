@@ -10,16 +10,18 @@ type Props = {
 export const IconList: FC<Props> = ({ users }) => {
   return (
     <List>
-      {users.map((item) => (
-        <ListIcon
-          key={item.name}
-          as={Image}
-          width="50px"
-          height="50px"
-          rounded="full"
-          src={item.image}
-        />
-      ))}
+      {users
+        .filter((item) => !!item)
+        .map((item) => (
+          <ListIcon
+            key={item.name}
+            as={Image}
+            width="50px"
+            height="50px"
+            rounded="full"
+            src={item.image}
+          />
+        ))}
     </List>
   )
 }

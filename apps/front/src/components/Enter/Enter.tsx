@@ -1,5 +1,5 @@
 import { Box, Container } from '@chakra-ui/react'
-import { FC } from 'react'
+import { FC, memo } from 'react'
 import { EnterNameInput } from './EnterNameInput'
 import { EnterVideo } from './EnterVideo'
 
@@ -13,7 +13,7 @@ type Props = {
   toggleMic: () => void
   micOn: boolean
 }
-export const Enter: FC<Props> = ({
+const FCEnter: FC<Props> = ({
   localVideoRef,
   name,
   setName,
@@ -48,3 +48,5 @@ export const Enter: FC<Props> = ({
     </Container>
   )
 }
+
+export const Enter = memo(FCEnter)

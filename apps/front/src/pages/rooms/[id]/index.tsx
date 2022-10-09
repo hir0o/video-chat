@@ -20,11 +20,11 @@ const Page: CustomNextPage = () => {
   const [cameraOn, setCameraOn] = useState(true)
   const [micOn, setMicOn] = useState(true)
   const [name, setName] = useState('')
-  const [stream, setStream] = useVideoStream()
+  const stream = useVideoStream()
   const localVideoRef = useRef<HTMLVideoElement>(null)
-  useLinkStreamToVideoElm(stream, localVideoRef.current)
   const router = useRouter()
   const { data } = useSession()
+  useLinkStreamToVideoElm(stream, localVideoRef)
 
   const handleSubmit = useCallback(() => {
     if (socket === null) return
@@ -37,7 +37,7 @@ const Page: CustomNextPage = () => {
     }).then(() => {
       setLeady(true)
     })
-  }, [setLeady, name, data, router.query.id, socket])
+  }, [socket, router.query?.id, name, setLeady, data?.user?.image])
 
   const handleToggleMic = useCallback(() => {
     if (stream == null) return
@@ -69,8 +69,8 @@ const Page: CustomNextPage = () => {
           name={name}
           stream={stream}
           handleToggleMic={handleToggleMic}
-          micOn={micOn}
           socket={socket}
+          micOn={micOn}
           handleToggleCamera={handleToggleCamera}
           cameraOn={cameraOn}
           // handleLeaveTheRoom={handleLeaveTheRoom}

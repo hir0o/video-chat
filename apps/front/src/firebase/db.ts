@@ -55,6 +55,14 @@ export const addUserToRoom = (roomId: string, userId: string, user: User) => {
   })
 }
 
+export const removeUser = async (roomId: string, userId: string) => {
+  const roomDoc = getDoc('rooms', roomId)
+
+  return updateDoc(roomDoc, {
+    [`users.${userId}`]: null,
+  })
+}
+
 const rooms = {
   'room-1': {
     users: {

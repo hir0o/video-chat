@@ -1,20 +1,17 @@
-import { useState } from 'react'
 import { useAsync } from 'react-use'
 
-export const useVideoStream = (): ReturnType<
-  typeof useState<MediaStream | undefined>
-> => {
-  const [stream, setStream] = useState<MediaStream | undefined>(undefined)
-
-  useAsync(async () => {
+export const useVideoStream = (): MediaStream | undefined => {
+  const stream = useAsync(async () => {
     const constraints: MediaStreamConstraints = {
       audio: true,
       video: true,
     }
     const streamObject = await navigator.mediaDevices.getUserMedia(constraints)
 
-    setStream(streamObject)
+    return streamObject
   }, [])
 
-  return [stream, setStream]
+  console.log(stream)
+
+  return stream.value
 }

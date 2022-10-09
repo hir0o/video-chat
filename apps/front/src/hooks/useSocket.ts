@@ -6,9 +6,10 @@ export const useSocket = (): Socket | null => {
   const [socket, setSocket] = useState<Socket | null>(null)
 
   useEffect(() => {
+    if (socket !== null) return
     const s = io(wsUrl)
     setSocket(s)
-  }, [])
+  }, [socket])
 
   useEffect(
     () => () => {

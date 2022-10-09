@@ -10,12 +10,6 @@ import { createRoom } from '~/firebase/db'
 import { useRooms } from '~/hooks/useRooms'
 import { useSpeech } from '~/hooks/useSpeech'
 
-const T: FC = () => {
-  const script = useSpeech()
-
-  return <div>{script.splice(-1)[0]}</div>
-}
-
 const Index: CustomNextPage = () => {
   const rooms = useRooms()
   const router = useRouter()
@@ -52,7 +46,6 @@ const Index: CustomNextPage = () => {
           ルームを作成
         </Button>
       </Container>
-      <T />
     </div>
   )
 }

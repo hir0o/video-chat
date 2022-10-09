@@ -3,8 +3,8 @@ export type User = {
   image: string
 }
 
-type Speech = {
-  userName: string
+export type SpeechMessage = {
+  name: string
   image: string
   text: string
   timestamp: number
@@ -12,7 +12,7 @@ type Speech = {
 
 export type Room = {
   users: Record<string, User>
-  speeches: Speech[]
+  speeches: SpeechMessage[]
   keyPhrases: string[]
 }
 

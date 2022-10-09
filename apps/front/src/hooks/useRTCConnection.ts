@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { RefObject, useCallback, useEffect, useRef, useState } from 'react'
 import { Socket } from 'socket.io-client'
 import { useAlert } from '~/store/alert'
 import { generateRemoteVideoUnit, generateVideoElm } from './generateVideoElm'
@@ -14,12 +14,12 @@ type RemoteVideo = {
 export const useRTCConnection = ({
   socket,
   stream,
-  remoteVideoWrapper,
+  remoteVideoWrapperRef,
   name,
 }: {
   socket: Socket | null
   stream: MediaStream | undefined
-  remoteVideoWrapper: HTMLDivElement | null
+  remoteVideoWrapperRef: RefObject<HTMLDivElement>
   name: string
 }) => {
   const roomId = useRoomId()
@@ -53,7 +53,7 @@ export const useRTCConnection = ({
   useEffect(() => {
     if (socket == null) return
     if (stream == null) return
-    if (remoteVideoWrapper == null) return
+    if (remoteVideoWrapperRef.current == null) return
     // callが来たら、peerConnectionを作成して、offerを送信する
     socket.on(
       'call',
@@ -78,7 +78,7 @@ export const useRTCConnection = ({
           payload.userName
         )
         // videoを表示
-        remoteVideoWrapper.appendChild(videoDom)
+        remoteVideoWrapperRef.current?.appendChild(videoDom)
 
         // peerConnectionを保存
         setPeerConnections((prev) => ({
@@ -108,13 +108,13 @@ export const useRTCConnection = ({
     return () => {
       socket.off('call')
     }
-  }, [socket, stream, roomId, peerConnections, remoteVideoWrapper, name])
+  }, [socket, stream, roomId, peerConnections, remoteVideoWrapperRef, name])
 
   // offerが来た時の処理
   useEffect(() => {
     if (socket == null) return
     if (stream == null) return
-    if (remoteVideoWrapper == null) return
+    if (remoteVideoWrapperRef == null) return
     // offerが来たら、peerConnectionを作成して、answerを送信する
     socket.on(
       'offer',
@@ -142,7 +142,7 @@ export const useRTCConnection = ({
         )
 
         // videoを表示
-        remoteVideoWrapper.appendChild(videoDom)
+        remoteVideoWrapperRef.current?.appendChild(videoDom)
 
         setPeerConnections((prev) => ({
           ...prev,
@@ -167,13 +167,13 @@ export const useRTCConnection = ({
     return () => {
       socket.off('offer')
     }
-  }, [socket, stream, roomId, peerConnections, remoteVideoWrapper])
+  }, [socket, stream, roomId, peerConnections, remoteVideoWrapperRef])
 
   // answerが来た時の処理
   useEffect(() => {
     if (socket == null) return
     if (stream == null) return
-    if (remoteVideoWrapper == null) return
+    if (remoteVideoWrapperRef.current == null) return
     // answerが来たら、peerConnectionを作成する
     socket.on(
       'answer',
@@ -196,7 +196,7 @@ export const useRTCConnection = ({
     return () => {
       socket.off('answer')
     }
-  }, [socket, stream, roomId, peerConnections, remoteVideoWrapper])
+  }, [socket, stream, roomId, peerConnections, remoteVideoWrapperRef])
 
   useEffect(() => {
     if (socket == null) return
@@ -241,7 +241,7 @@ export const useRTCConnection = ({
 
         showAlert({
           type: 'info',
-          text: `${connection.name}さんが退出しました`,
+          text: `${'hoge'}さんが退出しました`,
         })
         connection.connection.close()
         return rest

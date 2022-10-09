@@ -17,8 +17,8 @@ export const useLeaveTheRoomConfirm = () => {
   const cancelRef = useRef(null)
 
   const handleLeaveTheRoom = useCallback(() => {
-    router.push('/')
-  }, [])
+    void router.push('/')
+  }, [router])
 
   const ConfirmComponent = (
     <AlertDialog
