@@ -1,11 +1,16 @@
 import { Box, Button, Heading, List, ListItem } from '@chakra-ui/react'
 import { FC } from 'react'
+import { Room, RoomWithId } from '~/model'
 import { DashboardBox } from './DashboardBox'
 import { DashboardScript } from './DashboardScript'
 import { IconList } from './IconList'
 
+type Props = {
+  room: RoomWithId
+}
+
 /** @package */
-export const Dashboard: FC = () => {
+export const Dashboard: FC<Props> = ({ room }) => {
   return (
     <Box
       bgColor="gray.200"
@@ -18,12 +23,12 @@ export const Dashboard: FC = () => {
       alignItems="center"
     >
       <Heading as="h2" fontSize="2xl" p={4}>
-        <span>ルーム1</span>
+        <span>{room.id}</span>
       </Heading>
-      <Box display="grid" gridTemplateColumns="2fr 1fr" gap={8} w="100%">
+      <Box display="grid" gridTemplateColumns="2fr 1fr" gap={4} w="100%">
         <DashboardBox title="メンバー">
           <Box>
-            <IconList />
+            <IconList users={Object.values(room.users)} />
           </Box>
         </DashboardBox>
         <DashboardBox title="話題">

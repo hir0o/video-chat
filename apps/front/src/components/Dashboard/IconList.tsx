@@ -1,38 +1,25 @@
 import { ListIcon, Image, List } from '@chakra-ui/react'
 import { FC } from 'react'
+import { User } from '~/model'
+
+type Props = {
+  users: User[]
+}
 
 /** @package */
-export const IconList: FC = () => {
+export const IconList: FC<Props> = ({ users }) => {
   return (
     <List>
-      <ListIcon
-        as={Image}
-        width="50px"
-        height="50px"
-        rounded="full"
-        src="https://lh3.googleusercontent.com/a/ALm5wu0RYWIH0neLk7bfHI5KE5JiA0XAr9JyRxLa9kWD=s96-c"
-      />
-      <ListIcon
-        as={Image}
-        width="50px"
-        height="50px"
-        rounded="full"
-        src="https://lh3.googleusercontent.com/a/ALm5wu0RYWIH0neLk7bfHI5KE5JiA0XAr9JyRxLa9kWD=s96-c"
-      />
-      <ListIcon
-        as={Image}
-        width="50px"
-        height="50px"
-        rounded="full"
-        src="https://lh3.googleusercontent.com/a/ALm5wu0RYWIH0neLk7bfHI5KE5JiA0XAr9JyRxLa9kWD=s96-c"
-      />
-      <ListIcon
-        as={Image}
-        width="50px"
-        height="50px"
-        rounded="full"
-        src="https://lh3.googleusercontent.com/a/ALm5wu0RYWIH0neLk7bfHI5KE5JiA0XAr9JyRxLa9kWD=s96-c"
-      />
+      {users.map((item) => (
+        <ListIcon
+          key={item.name}
+          as={Image}
+          width="50px"
+          height="50px"
+          rounded="full"
+          src={item.image}
+        />
+      ))}
     </List>
   )
 }
