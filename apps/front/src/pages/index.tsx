@@ -2,17 +2,15 @@ import { Container, Heading } from '@chakra-ui/react'
 import { CustomNextPage } from 'next'
 import { useSession } from 'next-auth/react'
 import Head from 'next/head'
-import Link from 'next/link'
 import { FC } from 'react'
 import { Dashboard } from '~/components/Dashboard/Dashboard'
 import { Layout } from '~/components/Layout'
-import { useRooms } from '~/hooks/useRooms'
-import { useSpeechRecognition } from '~/hooks/useSpeechRecognition'
+import { useSpeech } from '~/hooks/useSpeech'
 
-const SpeechRecognition: FC = () => {
-  const val = useSpeechRecognition()
+const T: FC = () => {
+  const script = useSpeech()
 
-  return <div>{JSON.stringify(val)}</div>
+  return <div>{script.splice(-1)[0]}</div>
 }
 
 const Index: CustomNextPage = () => {
@@ -44,7 +42,7 @@ const Index: CustomNextPage = () => {
           </li>
         </ul> */}
       </Container>
-      <SpeechRecognition />
+      <T />
     </div>
   )
 }

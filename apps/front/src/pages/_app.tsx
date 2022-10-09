@@ -22,7 +22,7 @@ const App: CustomAppPage = ({
         <ChakraProvider>
           {/* @ts-ignore */}
           {getLayout(<Component {...pageProps} />)}
-          <Alert />
+          {/* <Alert /> */}
         </ChakraProvider>
       </RecoilRoot>
     </SessionProvider>
