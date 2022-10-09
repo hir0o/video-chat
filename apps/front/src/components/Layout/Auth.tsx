@@ -7,19 +7,19 @@ type Props = {
 }
 
 export const Auth: FC<Props> = ({ children }) => {
-  const { data, status } = useSession()
+  const { status } = useSession()
   const router = useRouter()
 
   if (status === 'loading') {
     return null
   }
 
-  if (!data && router.asPath !== '/login') {
+  if (status === 'unauthenticated' && router.asPath !== '/login') {
     void router.push('/login')
     return null
   }
 
-  if (data && router.asPath === '/login') {
+  if (status === 'authenticated' && router.asPath === '/login') {
     void router.push('/')
     return null
   }

@@ -9,7 +9,7 @@ const Page: CustomNextPage = () => {
   }
 
   return (
-    <Box>
+    <Box display="flex" justifyContent="center" alignItems="center">
       <Button colorScheme="blue" onClick={handleClick}>
         Google ログイン
       </Button>
