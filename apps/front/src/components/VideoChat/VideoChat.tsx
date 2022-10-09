@@ -101,7 +101,7 @@ export const VideoChat: FC<Props> = ({
           </ButtonList>
         </Box>
         {modal}
-        <Speech socket={socket} user={user} />
+        <Speech user={user} />
       </>
     </Container>
   )

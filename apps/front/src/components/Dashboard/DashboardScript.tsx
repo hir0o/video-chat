@@ -1,18 +1,24 @@
 import { Box, List, ListIcon, ListItem, Image } from '@chakra-ui/react'
 import { FC } from 'react'
+import { SpeechMessage } from '~/model'
 import { DashboardBox } from './DashboardBox'
 import { SpeechBubble } from './SpeechBubble'
 
+type Props = {
+  speeches: SpeechMessage[]
+}
 /** @package */
-export const DashboardScript: FC = () => {
+export const DashboardScript: FC<Props> = ({ speeches }) => {
+  console.log(speeches)
+
   return (
     <DashboardBox title="会話のスクリプト">
       <Box maxH="300px" overflow="scroll">
         <List display="flex" flexDirection="column" gap={4}>
-          {Array.from({ length: 10 }).map((n, i) => (
+          {speeches.map((item) => (
             <ListItem
               // eslint-disable-next-line react/no-array-index-key
-              key={i}
+              key={item.timestamp}
               display="flex"
               alignItems="center"
               justifyContent="left"
@@ -20,12 +26,12 @@ export const DashboardScript: FC = () => {
             >
               <ListIcon
                 as={Image}
-                src="https://lh3.googleusercontent.com/a/ALm5wu0RYWIH0neLk7bfHI5KE5JiA0XAr9JyRxLa9kWD=s96-c"
+                src={item.image}
                 width="30px"
                 height="30px"
                 rounded="full"
               />
-              <SpeechBubble text="やっはろー" />
+              <SpeechBubble text={item.text} />
             </ListItem>
           ))}
         </List>

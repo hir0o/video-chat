@@ -4,7 +4,9 @@ import SpeechRecognition, {
 } from 'react-speech-recognition'
 
 export const useSpeech = (): string => {
-  const { listening, finalTranscript } = useSpeechRecognition()
+  const { transcript, listening, finalTranscript } = useSpeechRecognition()
+
+  console.log(transcript, listening)
 
   useEffect(() => {
     if (listening) return

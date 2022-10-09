@@ -1,12 +1,13 @@
 import {
   addDoc,
+  arrayUnion,
   collection,
   doc,
   getDocs,
   setDoc,
   updateDoc,
 } from 'firebase/firestore'
-import { Room, RoomWithId } from '~/model'
+import { Room, RoomWithId, SpeechMessage } from '~/model'
 import { db } from '.'
 
 type Collection = 'rooms'
@@ -60,6 +61,17 @@ export const removeUser = async (roomId: string, userId: string) => {
 
   return updateDoc(roomDoc, {
     [`users.${userId}`]: null,
+  })
+}
+
+export const addMessageToRoom = async (
+  roomId: string,
+  speech: SpeechMessage
+) => {
+  const roomDoc = getDoc('rooms', roomId)
+
+  return updateDoc(roomDoc, {
+    speeches: arrayUnion(speech),
   })
 }
 

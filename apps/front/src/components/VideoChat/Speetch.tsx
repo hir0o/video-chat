@@ -1,15 +1,17 @@
+import { useRouter } from 'next/router'
 import { FC, memo, useState } from 'react'
 import { Socket } from 'socket.io-client'
+import { addMessageToRoom } from '~/firebase/db'
 import { useSpeech } from '~/hooks/useSpeech'
 import { User, SpeechMessage } from '~/model'
 
 type Props = {
-  socket: Socket | null
   user: User
 }
 
-const FCSpeech: FC<Props> = ({ socket, user }) => {
-  const [prevData, setPrevData] = useState('')
+const FCSpeech: FC<Props> = ({ user }) => {
+  const [prevData, setPrevData] = useState('test')
+  const router = useRouter()
   const data = useSpeech()
 
   if (data !== prevData) {
@@ -21,7 +23,9 @@ const FCSpeech: FC<Props> = ({ socket, user }) => {
       timestamp: Date.now(),
     }
 
-    // addMessageToRoom()
+    const roomId = router.query.id as string
+
+    void addMessageToRoom(roomId, message)
   }
 
   return null

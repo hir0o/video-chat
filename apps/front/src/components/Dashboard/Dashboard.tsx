@@ -47,7 +47,7 @@ export const Dashboard: FC<Props> = ({ room }) => {
             </List>
           </Box>
         </DashboardBox>
-        <DashboardScript />
+        <DashboardScript speeches={room.speeches} />
         <DashboardBox title="盛り上がり">
           <span>198%!!</span>
         </DashboardBox>
