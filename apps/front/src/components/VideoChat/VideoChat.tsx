@@ -12,7 +12,6 @@ import {
 } from '~/hooks/useLinkStreamToVideoElm'
 import { useRTCConnection } from '~/hooks/useRTCConnection'
 import { useSocket } from '~/hooks/useSocket'
-import { useSpeechRecognition } from '~/hooks/useSpeechRecognition'
 import { User } from '~/model'
 import { MicButton, VideoButton } from '../Button'
 import { LeaveButton } from '../Button/LeaveButton'

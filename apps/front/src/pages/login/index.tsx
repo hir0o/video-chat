@@ -5,7 +5,7 @@ import { Layout } from '~/components/Layout'
 export const Page: CustomNextPage = () => {
   return (
     <Box>
-      <Link bgColor={'gray.100'}>Googleでログイン</Link>
+      <Link bgColor="gray.100">Googleでログイン</Link>
     </Box>
   )
 }

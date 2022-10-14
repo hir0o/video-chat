@@ -1,8 +1,9 @@
 import { Box, Button, Heading, List, ListItem } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import { FC } from 'react'
+import { useKeyPhrase } from '~/hooks/useKeyPhrase'
 import { useSubscribeRoom } from '~/hooks/useSubscribeRoom'
-import { Room, RoomWithId } from '~/model'
+import { RoomWithId } from '~/model'
 import { DashboardBox } from './DashboardBox'
 import { DashboardScript } from './DashboardScript'
 import { IconList } from './IconList'
@@ -15,6 +16,8 @@ type Props = {
 export const Dashboard: FC<Props> = ({ roomId }) => {
   const router = useRouter()
   const { data: room } = useSubscribeRoom(roomId)
+
+  useKeyPhrase(room?.speeches || [])
 
   const handleClick = () => {
     void router.push(`/rooms/${roomId}`)

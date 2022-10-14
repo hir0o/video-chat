@@ -45,7 +45,7 @@ export const peerConnectionFactory = ({
   // 相手がストリームを送ってき時の処理
   connection.addEventListener('track', (e: RTCTrackEvent) => {
     // MediaStreamを取得(多分length === 1)
-    const streams = e.streams
+    const { streams } = e
     const videoStream = stream.getVideoTracks()[0]
     videoStream.addEventListener('ended', () => {
       console.log('video stream ended')
@@ -62,6 +62,7 @@ export const peerConnectionFactory = ({
         console.log('audio stream unmute')
       })
     }
+    // eslint-disable-next-line
     remoteVideo.srcObject = streams[0]
   })
   return connection

@@ -5,4 +5,7 @@ module.exports = {
   compilerOptions: {
     baseUrl: '.',
   },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
 }

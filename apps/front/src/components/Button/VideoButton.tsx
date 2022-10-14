@@ -1,6 +1,6 @@
 import { FC } from 'react'
-import { BaseButton } from './BaseButton'
 import { IoVideocamSharp, IoVideocamOff } from 'react-icons/io5'
+import { BaseButton } from './BaseButton'
 
 type Props = {
   onClick: () => void

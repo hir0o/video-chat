@@ -73,6 +73,7 @@ module.exports = {
         },
       },
     ],
+    'react/jsx-props-no-spreading': 0,
   },
   ignorePatterns: ['.eslintrc.*', '*.config.*'],
 }

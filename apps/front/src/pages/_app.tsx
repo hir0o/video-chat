@@ -17,10 +17,10 @@ const App: CustomAppPage = ({
     })
 
   return (
+    // eslint-disable-next-line
     <SessionProvider session={session}>
       <RecoilRoot>
         <ChakraProvider>
-          {/* @ts-ignore */}
           {getLayout(<Component {...pageProps} />)}
           {/* <Alert /> */}
         </ChakraProvider>

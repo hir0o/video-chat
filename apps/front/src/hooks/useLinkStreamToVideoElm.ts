@@ -7,6 +7,7 @@ export const useLinkStreamToVideoElm = (
 ) => {
   useEffect(() => {
     if (stream && videoElm.current !== null) {
+      // eslint-disable-next-line no-param-reassign
       videoElm.current.srcObject = stream
     }
   }, [stream, videoElm])
