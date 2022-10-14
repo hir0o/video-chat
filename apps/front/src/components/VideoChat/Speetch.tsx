@@ -7,14 +7,15 @@ import { User, SpeechMessage } from '~/model'
 
 type Props = {
   user: User
+  active: boolean
 }
 
-const FCSpeech: FC<Props> = ({ user }) => {
+const FCSpeech: FC<Props> = ({ user, active }) => {
   const [prevData, setPrevData] = useState('test')
   const router = useRouter()
   const data = useSpeech()
 
-  if (data !== prevData && data !== '') {
+  if (data !== prevData && data !== '' && active) {
     setPrevData(data)
     const message: SpeechMessage = {
       name: user.name,
