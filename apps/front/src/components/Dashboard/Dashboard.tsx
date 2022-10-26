@@ -24,7 +24,7 @@ export const Dashboard: FC<Props> = ({ roomId }) => {
   }
 
   if (room === undefined || Object.keys(room.users).length === 0) {
-    return null
+    // return null
   }
 
   return (
@@ -50,9 +50,9 @@ export const Dashboard: FC<Props> = ({ roomId }) => {
         <DashboardBox title="話題">
           <Box>
             <List>
-              <ListItem>就活</ListItem>
-              <ListItem>寒さ</ListItem>
-              <ListItem>東京</ListItem>
+              {room?.keyPhrases.map((item) => (
+                <ListItem>{item}</ListItem>
+              ))}
             </List>
           </Box>
         </DashboardBox>
