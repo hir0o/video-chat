@@ -24,7 +24,7 @@ export const Dashboard: FC<Props> = ({ roomId }) => {
   }
 
   if (room === undefined || Object.keys(room.users).length === 0) {
-    // return null
+    return null
   }
 
   return (
