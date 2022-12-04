@@ -1,25 +1,26 @@
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import { FC } from 'react'
+import { useUserValue } from '~/store/user'
 
 type Props = {
   children: React.ReactNode
 }
 
 export const Auth: FC<Props> = ({ children }) => {
-  const { status } = useSession()
+  const { isLoggedIn } = useUserValue()
   const router = useRouter()
 
-  if (status === 'loading') {
-    return null
-  }
+  console.log('router')
 
-  if (status === 'unauthenticated' && router.asPath !== '/login') {
+  if (typeof window === 'undefined') return null
+
+  if (!isLoggedIn && router.asPath !== '/login') {
     void router.push('/login')
     return null
   }
 
-  if (status === 'authenticated' && router.asPath === '/login') {
+  if (isLoggedIn && router.asPath === '/login') {
     void router.push('/')
     return null
   }

@@ -13,6 +13,7 @@ import { addUserToRoom } from '~/firebase/db'
 import { useLinkStreamToVideoElm } from '~/hooks/useLinkStreamToVideoElm'
 import { useSocket } from '~/hooks/useSocket'
 import { useVideoStream } from '~/hooks/useVideoStream'
+import { useUserValue } from '~/store/user'
 
 const Page: CustomNextPage = () => {
   const socket = useSocket()
@@ -23,7 +24,7 @@ const Page: CustomNextPage = () => {
   const stream = useVideoStream()
   const localVideoRef = useRef<HTMLVideoElement>(null)
   const router = useRouter()
-  const { data } = useSession()
+  const { user } = useUserValue()
   useLinkStreamToVideoElm(stream, localVideoRef)
 
   const handleSubmit = useCallback(() => {
@@ -33,11 +34,11 @@ const Page: CustomNextPage = () => {
     //  今後socketのidと紐付けが必要になったら対応する。
     void addUserToRoom(roomId, socket.id, {
       name,
-      image: data?.user?.image || '',
+      image: user?.image || '',
     }).then(() => {
       setLeady(true)
     })
-  }, [socket, router.query?.id, name, setLeady, data?.user?.image])
+  }, [socket, router.query?.id, name, setLeady, user?.image])
 
   const handleToggleMic = useCallback(() => {
     if (stream == null) return

@@ -1,13 +1,20 @@
 import { Box, Button, Container, Heading, Image } from '@chakra-ui/react'
-import { signIn, signOut, useSession } from 'next-auth/react'
-import { FC } from 'react'
+import { useRouter } from 'next/router'
+import { FC, useCallback } from 'react'
+import { useSetUser, useUserValue } from '~/store/user'
 
 export const Header: FC = () => {
-  const { data, status } = useSession()
+  const { user, isLoggedIn } = useUserValue()
+  const setUser = useSetUser()
+  const router = useRouter()
 
-  const handleClick = () => {
-    void signOut()
-  }
+  const handleClick = useCallback(() => {
+    setUser({
+      user: undefined,
+      isLoggedIn: false,
+    })
+    void router.push('/login')
+  }, [setUser, router])
 
   return (
     <Box as="header" bg="white">
@@ -23,15 +30,15 @@ export const Header: FC = () => {
         </Heading>
 
         <Box display="flex" alignItems="center" justifyContent="center" gap={4}>
-          {data?.user?.image && (
+          {user && (
             <Image
-              src={data.user.image}
+              src={user.image}
               alt="user image"
               boxSize="40px"
               borderRadius="full"
             />
           )}
-          {status === 'authenticated' && (
+          {isLoggedIn && (
             <Button colorScheme="blue" onClick={handleClick}>
               ログアウト
             </Button>

@@ -19,7 +19,6 @@ const Index: CustomNextPage = () => {
     const roomId = await createRoom()
     void router.push(`/rooms/${roomId}`)
   }
-  const { data } = useSession()
 
   return (
     <div>
